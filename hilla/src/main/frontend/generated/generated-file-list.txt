@@ -1,0 +1,5 @@
+MessageEndpoint.ts
+com/example/application/model/Message.ts
+connect-client.default.ts
+endpoints.ts
+com/example/application/model/MessageModel.ts
