@@ -12,22 +12,22 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 @Configuration
-public class KafkaConsumerConfig {
+public class KafkaElementConsumerConfig {
 
     @Bean
-    public ConsumerFactory<String, ListElement> consumerFactory() {
+    public ConsumerFactory<String, ElementMessage> elementConsumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "my-group-id");
+        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "list-group");
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ListElementDeSerializer.class);
+        configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ElementMessageDeSerializer.class);
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, ListElement> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, ListElement> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+    public ConcurrentKafkaListenerContainerFactory<String, ElementMessage> kafkaElementListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ElementMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(elementConsumerFactory());
         return factory;
     }
 }

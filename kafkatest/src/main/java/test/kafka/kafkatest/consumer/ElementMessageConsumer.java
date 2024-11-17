@@ -4,11 +4,11 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MessageConsumer {
+public class ElementMessageConsumer {
 
-    @KafkaListener(topics = "listelement", groupId = "list-group",
-    containerFactory = "kafkaListenerContainerFactory")
-    public void listen(ListElement message) {
+    @KafkaListener(topics = "elementMessage", groupId = "list-group",
+    containerFactory = "kafkaElementListenerContainerFactory")
+    public void listen(ElementMessage message) {
         System.out.println("Received message: " + message);
     }
 }
