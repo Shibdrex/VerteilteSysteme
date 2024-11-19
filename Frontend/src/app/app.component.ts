@@ -9,6 +9,9 @@ import { filter } from 'rxjs/operators';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
+  title(title: any) {
+    throw new Error('Method not implemented.');
+  }
   currentUrl: string | undefined;
 
   constructor(private router: Router, private route: ActivatedRoute) {}

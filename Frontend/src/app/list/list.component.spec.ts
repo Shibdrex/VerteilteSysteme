@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VollansichtComponent } from './vollansicht.component';
+import { ListComponent } from './list.component';
 
-describe('VollansichtComponent', () => {
-  let component: VollansichtComponent;
-  let fixture: ComponentFixture<VollansichtComponent>;
+describe('ListComponent', () => {
+  let component: ListComponent;
+  let fixture: ComponentFixture<ListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [VollansichtComponent]
+      declarations: [ListComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(VollansichtComponent);
+    fixture = TestBed.createComponent(ListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

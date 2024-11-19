@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-listeneu',
-  templateUrl: './listeneu.component.html',
-  styleUrls: ['./listeneu.component.css']
+  selector: 'app-new-list',
+  templateUrl: './new-list.component.html',
+  styleUrl: './new-list.component.css'
 })
-export class ListeneuComponent {
+export class NewListComponent {
   
   titel: HTMLElement | null;
   toDo: HTMLElement | null;
@@ -22,4 +22,5 @@ export class ListeneuComponent {
     this.toDo = document.getElementById('input');
 
   }
+
 }
