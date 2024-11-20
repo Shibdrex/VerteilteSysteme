@@ -17,7 +17,6 @@ export class AppComponent implements OnInit {
   constructor(private router: Router, private route: ActivatedRoute) {}
   ngOnInit(): void {
 
-console.log('ich bin in ngOnIt')
 
     throw new Error('Method not implemented.');
   }
@@ -32,3 +31,5 @@ console.log('ich bin in ngOnIt')
   }
    
     }
+
+

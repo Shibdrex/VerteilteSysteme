@@ -6,6 +6,11 @@ import { Component } from '@angular/core';
   styleUrl: './list-view.component.css'
 })
 export class ListViewComponent {
+
+  
+  Add(){
+
+  }
   
   Remove(){
     
