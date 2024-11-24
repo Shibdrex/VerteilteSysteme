@@ -1,7 +1,5 @@
 package dh.distributed.systems.User_Service.model;
 
-import org.hibernate.type.descriptor.jdbc.VarcharJdbcType;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,11 +23,11 @@ public class ListUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private VarcharJdbcType firstname;
+    private String firstname;
 
-    private VarcharJdbcType lastname;
+    private String lastname;
 
-    private VarcharJdbcType password;
+    private String password;
 
-    private VarcharJdbcType email;
+    private String email;
 }
