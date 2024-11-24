@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello WebSocket</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="/main.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="/app.js"></script>
+</head>
+
+<body>
+    <noscript>
+        <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+            enabled. Please enable
+            Javascript and reload this page!</h2>
+    </noscript>
+    <div id="main-content" class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="connect">WebSocket connection:</label>
+                        <button id="connect" class="btn btn-default" type="submit">Connect</button>
+                        <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="userID">User ID</label>
+                        <input type="text" id="userID" class="form-control" placeholder="userID here..."><br>
+                        
+                        <label for="listID">List ID</label>
+                        <input type="text" id="listID" class="form-control" placeholder="listID here..."><br>
+                        
+                        <label for="elementID">Element ID</label>
+                        <input type="text" id="elementID" class="form-control" placeholder="elementID here..."><br>
+                        
+                        <label for="action">Action</label>
+                        <input type="text" id="action" class="form-control" placeholder="action here..."><br>
+                        
+                        <div>
+                            <h3>List</h3>
+                            <label for="title">Title</label>
+                            <input type="text" id="title" class="form-control" placeholder="title here..."><br>
+                        
+                            <label for="favorite">Favorite</label>
+                            <input type="text" id="favorite" class="form-control" placeholder="favorite here..."><br>
+                        </div>
+                        
+                        <div>
+                            <h3>Element</h3>
+                            <label for="name">Name</label>
+                            <input type="text" id="name" class="form-control" placeholder="name here..."><br>
+                        
+                            <label for="priority">Priority</label>
+                            <input type="text" id="priority" class="form-control" placeholder="priority here..."><br>
+                        
+                            <label for="tags">Tags</label>
+                            <input type="text" id="tags" class="form-control" placeholder="tags here..."><br>
+                        
+                            <label for="dueDate">Due Date</label>
+                            <input type="text" id="dueDate" class="form-control" placeholder="dueDate here..."><br>
+                        
+                            <label for="status">Status</label>
+                            <input type="text" id="status" class="form-control" placeholder="status here..."><br>
+                        </div>
+                        
+                    </div>
+                    <button id="send" class="btn btn-default" type="submit">Send</button>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table id="conversation" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Greetings</th>
+                        </tr>
+                    </thead>
+                    <tbody id="greetings">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
