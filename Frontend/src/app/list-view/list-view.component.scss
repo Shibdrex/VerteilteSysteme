@@ -1,0 +1,25 @@
+.box {
+    border: 1px solid #dee2e6;
+    padding: 20px;
+    margin-bottom: 10px;
+    background-color: #f8f9fa;
+    margin-left: 20px;
+    min-width: 200px; 
+    max-width: 200px;
+    min-height: 220px;
+    border-radius: 1rem;
+    box-shadow: 5px 5px lightgrey;
+    
+}
+
+.box:hover{
+    box-shadow: 1px 1px lightgrey;
+}
+
+a{
+    text-decoration: none;
+ }
+
+ h1{
+    top: 0;
+ }
