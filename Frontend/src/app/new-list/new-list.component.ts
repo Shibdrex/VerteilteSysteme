@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
   styleUrl: './new-list.component.scss'
 })
 export class NewListComponent {
+
   titel: HTMLElement | null;
   toDo: HTMLElement | null;
 
@@ -21,4 +22,5 @@ export class NewListComponent {
     this.toDo = document.getElementById('input');
 
   }
+
 }

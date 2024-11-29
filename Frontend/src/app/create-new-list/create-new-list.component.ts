@@ -1,6 +1,8 @@
+
 import { Component, Type } from '@angular/core';
 import { HTTPPostService } from '../httppost.service';
 import * as StompJs from '@stomp/stompjs';
+
 
 
 @Component({
@@ -86,3 +88,4 @@ export class CreateNewListComponent {
   }
 }
 }
+

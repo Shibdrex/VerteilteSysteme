@@ -3,11 +3,13 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+
     "Frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss",
+
           "standalone": false
         },
         "@schematics/angular:directive": {
@@ -24,7 +26,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+
             "outputPath": "dist/frontend",
+
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -32,6 +36,7 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+
             "assets": [
               {
                 "glob": "**/*",
@@ -39,7 +44,9 @@
               }
             ],
             "styles": [
+
               "src/styles.scss"
+
             ],
             "scripts": []
           },
@@ -71,10 +78,12 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
+
               "buildTarget": "Frontend:build:production"
             },
             "development": {
               "buildTarget": "Frontend:build:development"
+
             }
           },
           "defaultConfiguration": "development"
@@ -90,7 +99,9 @@
               "zone.js/testing"
             ],
             "tsConfig": "tsconfig.spec.json",
+
             "inlineStyleLanguage": "scss",
+
             "assets": [
               {
                 "glob": "**/*",
@@ -98,8 +109,10 @@
               }
             ],
             "styles": [
+
               "src/styles.scss"
             ],
+=
             "scripts": []
           }
         }
@@ -109,4 +122,5 @@
   "cli": {
     "analytics": false
   }
+
 }
