@@ -1,5 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, Type } from '@angular/core';
+import { HTTPPostService } from '../httppost.service';
+import * as StompJs from '@stomp/stompjs';
+
 
 @Component({
   selector: 'app-create-new-list',
@@ -8,32 +10,79 @@ import { Component } from '@angular/core';
 })
 export class CreateNewListComponent {
 
-  
+  private client: StompJs.Client;
 
-  /* 
+  
   //Standard values when new list is created
-  list = `{ 
-    "list": [
+ input = 
+  `{ 
+    "userID": 1,
+    "action": "CREATE",
+    "list": 
       {
-        "name": "Neue Liste",
-        "todos": {},
-        "fav": false
+        "title": "Neue Liste",
+        "favorite": false
       }
-    ]
   }`;
+
+  // `{ 
+  //     "firstname": "Fickdich",
+  //     "lastname": "j",
+  //     "email": "j@l.e",
+  //     "password": "jejfief"
+  // }`;
+
+  list = JSON.parse(this.input)
+
+
+  connected = false
+
+
   
- 
 
-  constructor(private http: HttpClient) {}
+  constructor(private httpPostService: HTTPPostService) {
+    this.client = new StompJs.Client({
+      brokerURL: "ws://localhost:5000/server"
+    })
 
-  
-
-  sendToKafka() { //Sends new List request over Loadbalancer to Kafka
-    this.http.post('http://localhost:9092/', { message: this.list })
-      .subscribe({
-        next: () => console.log('Message sent to Kafka successfully'),
-        error: (err) => console.error('Error sending message to Kafka:', err),
-      });
+    this.client.onConnect = (frame) => {
+    console.log("connected: ", frame)
+    this.client.subscribe("/topic/list-answer", (greeting) =>{
+      console.log("greeting: ",greeting)
+    })
   }
-  */
+
+  this.client.onWebSocketError = (error) => {
+    console.error("Bitte helfen Sie mir ich bin in Gefahr: ", error)
+  }
+
+  this.client.onStompError = (frame) => {
+    console.error("Broker reported error: ", frame.headers["message"])
+    console.error("Adidtional details: ", frame.body)
+  }
+
+  }
+  
+
+  
+
+  async sendToKafka() { //Sends new List to Websocet through HTTPPostService 
+    console.log("enters function sendToKafka: ", this.list)
+   this.httpPostService.sendMessage(this.list).subscribe({
+    next: () => console.log('Message sent to Kafka successfully'),
+    error: (err) => console.error('Error sending message to Kafka:', err),
+   });
+    this.client.activate()
+    await new Promise(f => setTimeout(f,1000))
+    this.connected = true
+    this.client.publish({
+      destination: "/app/list",
+      body: JSON.stringify(this.list) 
+    });
+
+  if(this.connected) {
+    this.client.deactivate()
+    this.connected = false 
+  }
+}
 }
