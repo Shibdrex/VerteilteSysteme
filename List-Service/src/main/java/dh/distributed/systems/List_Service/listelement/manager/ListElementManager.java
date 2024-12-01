@@ -1,7 +1,6 @@
 package dh.distributed.systems.List_Service.listelement.manager;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -26,15 +25,16 @@ public class ListElementManager {
     private final TodoListRepository listRepository;
 
     public Boolean isValid(final ListElement element) {
-        if (element != null
+        return element != null
                 && element.getStatus() != null
                 && element.getPriority() != null
                 && element.getTags() != null
                 && element.getDueDate() != null
-                && element.getName() != null) {
-                return true;
-        }
-        return false;
+                && element.getName() != null;
+    }
+
+    public List<ListElement> getAllElements() {
+        return this.listElementRepository.findAll();
     }
 
     public List<ListElement> getAllElementsByUserID(final Integer userID) {
@@ -53,18 +53,15 @@ public class ListElementManager {
         return elements;
     }
 
-    public List<ListElement> getAllElements() {
-        return this.listElementRepository.findAll();
-    }
-
     public ListElement getElement(final Integer ID) {
-        ListElement element = this.listElementRepository.findById(ID)
+        return this.listElementRepository.findById(ID)
                 .orElseThrow(() -> new ListElementNotFoundException(ID));
-
-        return element;
     }
 
     public ListElement createElement(final Integer userID, final Integer listID, final ListElement element) {
+        if (!isValid(element)) {
+            throw new IllegalArgumentException("Invalid element data.");
+        }
         ListElement elem = this.listUserRepository.findById(userID).map(user -> {
             element.setUser(user);
             return element;
@@ -78,6 +75,9 @@ public class ListElementManager {
 
     @Transactional
     public ListElement updateElement(final ListElement newElement, final Integer ID) {
+        if (!isValid(newElement)) {
+            throw new IllegalArgumentException("Invalid element data.");
+        }
         return this.listElementRepository.findById(ID)
                 .map(element -> {
                     element.setStatus(newElement.getStatus());
@@ -87,15 +87,13 @@ public class ListElementManager {
                     element.setName(newElement.getName());
                     return this.listElementRepository.save(element);
                 })
-                .orElseGet(() -> {
-                    return this.listElementRepository.save(newElement);
-                });
+                .orElseGet(() -> this.listElementRepository.save(newElement));
     }
 
     @Transactional
     public void deleteElement(final Integer ID) {
-        Optional<ListElement> optElement = this.listElementRepository.findById(ID);
-        ListElement element = optElement.get();
+        ListElement element = this.listElementRepository.findById(ID)
+                .orElseThrow(() -> new ListElementNotFoundException(ID));
         this.listElementRepository.delete(element);
     }
 
