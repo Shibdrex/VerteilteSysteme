@@ -1,5 +1,9 @@
-import { Component } from '@angular/core';
-import { WebSocketService } from '../httppost.service';
+
+import { Component, Type } from '@angular/core';
+import { HTTPPostService } from '../httppost.service';
+import * as StompJs from '@stomp/stompjs';
+
+
 
 @Component({
   selector: 'app-create-new-list',
@@ -34,5 +38,5 @@ export class CreateNewListComponent {
     this.webSocketService.closeConnection(); //calls httppost.service to CLOSE connection with Websocket
   }
 }
-
+}
 

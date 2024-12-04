@@ -5,6 +5,7 @@ import { PostUserServiceService } from '../post-user-service.service';
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
+
 })
 export class NavbarComponent implements OnInit{
 
