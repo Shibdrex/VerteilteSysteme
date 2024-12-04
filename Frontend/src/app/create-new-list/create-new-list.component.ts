@@ -1,6 +1,6 @@
 
 import { Component, Type } from '@angular/core';
-import { HTTPPostService } from '../httppost.service';
+import {  WebSocketService } from '../httppost.service';
 import * as StompJs from '@stomp/stompjs';
 
 
@@ -38,5 +38,5 @@ export class CreateNewListComponent {
     this.webSocketService.closeConnection(); //calls httppost.service to CLOSE connection with Websocket
   }
 }
-}
+
 
