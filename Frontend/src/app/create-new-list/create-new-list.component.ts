@@ -1,88 +1,38 @@
-import { Component, Type } from '@angular/core';
-import { HTTPPostService } from '../httppost.service';
-import * as StompJs from '@stomp/stompjs';
-
+import { Component } from '@angular/core';
+import { WebSocketService } from '../httppost.service';
 
 @Component({
   selector: 'app-create-new-list',
   templateUrl: './create-new-list.component.html',
-  styleUrl: './create-new-list.component.scss'
+ styleUrl: './create-new-list.component.scss'
 })
 export class CreateNewListComponent {
 
-  private client: StompJs.Client;
-
-  
-  //Standard values when new list is created
- input = 
-  `{ 
+  //default input for new created todo lists
+  private input = `{ 
     "userID": 1,
     "action": "CREATE",
-    "list": 
-      {
-        "title": "Neue Liste",
-        "favorite": false
-      }
+    "list": {
+      "title": "Neue Liste",
+      "favorite": false
+    }
   }`;
 
-  // `{ 
-  //     "firstname": "Fickdich",
-  //     "lastname": "j",
-  //     "email": "j@l.e",
-  //     "password": "jejfief"
-  // }`;
+  private list = JSON.parse(this.input);
+  private readonly topic = '/app/create-list'; // define topic for WebSocket
 
-  list = JSON.parse(this.input)
-
-
-  connected = false
-
-
-  
-
-  constructor(private httpPostService: HTTPPostService) {
-    this.client = new StompJs.Client({
-      brokerURL: "ws://localhost:5000/server"
-    })
-
-    this.client.onConnect = (frame) => {
-    console.log("connected: ", frame)
-    this.client.subscribe("/topic/list-answer", (greeting) =>{
-      console.log("greeting: ",greeting)
-    })
+  constructor(private webSocketService: WebSocketService) {
+    this.webSocketService.connect(); //calls httppost.service to OPEN connection with WebSocket
   }
 
-  this.client.onWebSocketError = (error) => {
-    console.error("Bitte helfen Sie mir ich bin in Gefahr: ", error)
+  sendListToKafka(): void {
+    console.log('Sending list to Kafka via topic:', this.topic);//controll/dubug log
+    this.webSocketService.sendMessage(this.topic, this.list);
   }
 
-  this.client.onStompError = (frame) => {
-    console.error("Broker reported error: ", frame.headers["message"])
-    console.error("Adidtional details: ", frame.body)
-  }
-
-  }
-  
-
-  
-
-  async sendToKafka() { //Sends new List to Websocet through HTTPPostService 
-    console.log("enters function sendToKafka: ", this.list)
-   this.httpPostService.sendMessage(this.list).subscribe({
-    next: () => console.log('Message sent to Kafka successfully'),
-    error: (err) => console.error('Error sending message to Kafka:', err),
-   });
-    this.client.activate()
-    await new Promise(f => setTimeout(f,1000))
-    this.connected = true
-    this.client.publish({
-      destination: "/app/list",
-      body: JSON.stringify(this.list) 
-    });
-
-  if(this.connected) {
-    this.client.deactivate()
-    this.connected = false 
+  ngOnDestroy(): void {
+    this.webSocketService.closeConnection(); //calls httppost.service to CLOSE connection with Websocket
   }
 }
-}
+
+
