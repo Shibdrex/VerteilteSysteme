@@ -7,6 +7,7 @@ import { NewListComponent } from './new-list/new-list.component';
 
 const routes: Routes = [
   {path:'list', component: ListComponent},
+  {path:'listView', component: ListViewComponent},
   {path:'',redirectTo:'/list',pathMatch: 'full'},
   {path:'listView',component: ListViewComponent},
   {path:'newList', component: NewListComponent},

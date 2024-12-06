@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+
 
 @Component({
   selector: 'app-list-view',
@@ -6,7 +7,11 @@ import { Component } from '@angular/core';
 
   styleUrl: './list-view.component.scss'
 })
+
+
 export class ListViewComponent {
+
+  @Input() item: any;
 
 
   Add(){
@@ -14,7 +19,15 @@ export class ListViewComponent {
   }
   
   Remove(){
-    
+   console.log(this.item)
+  }
+
+  ChangeNotFav(){
+
+  }
+
+  ChangeFav(){
+
   }
 
 }

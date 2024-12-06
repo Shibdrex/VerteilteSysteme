@@ -1,17 +1,8 @@
-.container-fluid{
-    display: flex;
-    flex-direction: row;
-}
-
 body{
     margin: 0;
     padding: 0;
 }
 
-.class{
-    display: flex;
-    flex-direction: row;
-}
 
 .box:hover{
     box-shadow: 1px 1px lightgrey;
@@ -30,4 +21,5 @@ a {
 	cursor: pointer;
 	outline: inherit;
  }
+
  

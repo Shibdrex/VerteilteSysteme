@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { WebSocketService } from '../httppost.service'; 
 
 @Component({
@@ -11,6 +11,8 @@ export class ListComponent {
   private lists : any; //Variable for Lists
 
   private topic  = '/app/create-list'; //topic for connection with WebSocket
+
+  @Input() title = "title";
 
 constructor(private webSocket: WebSocketService) {}
 
