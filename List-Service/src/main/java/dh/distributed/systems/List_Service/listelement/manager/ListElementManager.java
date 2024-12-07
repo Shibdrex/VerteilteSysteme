@@ -11,7 +11,6 @@ import dh.distributed.systems.List_Service.listUser.repository.ListUserRepositor
 import dh.distributed.systems.List_Service.listelement.exception.ListElementNotFoundException;
 import dh.distributed.systems.List_Service.listelement.model.ListElement;
 import dh.distributed.systems.List_Service.listelement.repository.ListElementRepository;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -41,16 +40,14 @@ public class ListElementManager {
         if (!this.listUserRepository.existsById(userID)) {
             throw new ListUserNotFoundException(userID);
         }
-        List<ListElement> elements = this.listElementRepository.findByUserId(userID);
-        return elements;
+        return this.listElementRepository.findByUserId(userID);
     }
 
     public List<ListElement> getAllElementsByListID(final Integer listID) {
         if (!this.listRepository.existsById(listID)) {
             throw new TodoListNotFoundException(listID);
         }
-        List<ListElement> elements = this.listElementRepository.findByListId(listID);
-        return elements;
+        return this.listElementRepository.findByListId(listID);
     }
 
     public ListElement getElement(final Integer ID) {
@@ -73,7 +70,6 @@ public class ListElementManager {
         return elem;
     }
 
-    @Transactional
     public ListElement updateElement(final ListElement newElement, final Integer ID) {
         if (!isValid(newElement)) {
             throw new IllegalArgumentException("Invalid element data.");
@@ -90,14 +86,12 @@ public class ListElementManager {
                 .orElseGet(() -> this.listElementRepository.save(newElement));
     }
 
-    @Transactional
     public void deleteElement(final Integer ID) {
         ListElement element = this.listElementRepository.findById(ID)
                 .orElseThrow(() -> new ListElementNotFoundException(ID));
         this.listElementRepository.delete(element);
     }
 
-    @Transactional
     public void deleteAllByUser(final Integer userID) {
         if (!this.listUserRepository.existsById(userID)) {
             throw new ListUserNotFoundException(userID);
@@ -105,11 +99,14 @@ public class ListElementManager {
         this.listElementRepository.deleteByUserId(userID);
     }
 
-    @Transactional
     public void deleteAllByList(final Integer listID) {
         if (!this.listRepository.existsById(listID)) {
             throw new TodoListNotFoundException(listID);
         }
         this.listElementRepository.deleteByListId(listID);
+    }
+
+    public void deleteAll() {
+        this.listElementRepository.deleteAll();
     }
 }

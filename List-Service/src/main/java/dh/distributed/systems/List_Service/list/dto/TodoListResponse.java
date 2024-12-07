@@ -26,4 +26,10 @@ public class TodoListResponse {
         this.links = model.getLinks().toList().stream()
                 .collect(Collectors.toMap(link -> link.getRel().value(), link -> link.getHref()));
     }
+
+    public TodoListResponse(TodoList list) {
+        this.id = list.getId();
+        this.title = list.getTitle();
+        this.favorite = list.getFavorite();
+    }
 }

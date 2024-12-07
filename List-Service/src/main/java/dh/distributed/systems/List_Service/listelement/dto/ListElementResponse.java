@@ -35,4 +35,13 @@ public class ListElementResponse {
         this.links = model.getLinks().toList().stream()
                 .collect(Collectors.toMap(link -> link.getRel().value(), link -> link.getHref()));
     }
+
+    public ListElementResponse(ListElement element) {
+        this.id = element.getId();
+        this.status = element.getStatus();
+        this.priority = element.getPriority();
+        this.tags = element.getTags();
+        this.dueDate = element.getDueDate();
+        this.name = element.getName();
+    }
 }

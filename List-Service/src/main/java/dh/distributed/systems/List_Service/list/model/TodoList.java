@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import dh.distributed.systems.List_Service.listUser.model.ListUser;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -27,9 +28,13 @@ public class TodoList {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", columnDefinition = "INT", nullable = false)
     private Integer id;
 
+    @Column(name = "title", columnDefinition = "TEXT", nullable = false)
     private String title;
+
+    @Column(name = "favorite", columnDefinition = "BOOLEAN", nullable = false)
     private Boolean favorite;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

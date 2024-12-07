@@ -9,7 +9,6 @@ import dh.distributed.systems.List_Service.list.model.TodoList;
 import dh.distributed.systems.List_Service.list.repository.TodoListRepository;
 import dh.distributed.systems.List_Service.listUser.exception.ListUserNotFoundException;
 import dh.distributed.systems.List_Service.listUser.repository.ListUserRepository;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -34,8 +33,7 @@ public class TodoListManager {
         if (!this.listUserRepository.existsById(userID)) {
             throw new ListUserNotFoundException(userID);
         }
-        List<TodoList> lists = this.listRepository.findByUserId(userID);
-        return lists;
+        return this.listRepository.findByUserId(userID);
     }
 
     public TodoList getList(final Integer ID) {
@@ -47,14 +45,12 @@ public class TodoListManager {
         if (!isValid(list)) {
             throw new IllegalArgumentException("Invalid list data.");
         }
-        TodoList lst = this.listUserRepository.findById(userID).map(user -> {
+        return this.listUserRepository.findById(userID).map(user -> {
             list.setUser(user);
             return this.listRepository.save(list);
         }).orElseThrow(() -> new ListUserNotFoundException(userID));
-        return lst;
     }
 
-    @Transactional
     public TodoList updateList(final TodoList newList, final Integer ID) {
         if (!isValid(newList)) {
             throw new IllegalArgumentException("Invalid list data.");
@@ -68,18 +64,20 @@ public class TodoListManager {
                 .orElseGet(() -> this.listRepository.save(newList));
     }
 
-    @Transactional
     public void deleteList(final Integer ID) {
         TodoList list = this.listRepository.findById(ID)
                 .orElseThrow(() -> new TodoListNotFoundException(ID));
         this.listRepository.delete(list);
     }
 
-    @Transactional
     public void deleteAllByUser(final Integer userID) {
         if (!this.listRepository.existsById(userID)) {
             throw new ListUserNotFoundException(userID);
         }
         this.listRepository.deleteByUserId(userID);
+    }
+
+    public void deleteAll() {
+        this.listRepository.deleteAll();
     }
 }

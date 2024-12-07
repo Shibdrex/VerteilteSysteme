@@ -13,6 +13,9 @@ public class ListMessageProducer {
     private final KafkaTemplate<String, ListMessage> KafkaListTemplate;
 
     public void sendMessage(String topic, ListMessage message) {
-        KafkaListTemplate.send(topic, message);
+        KafkaListTemplate.executeInTransaction(operations -> {
+            operations.send(topic, message);
+            return true;
+        });
     }
 }

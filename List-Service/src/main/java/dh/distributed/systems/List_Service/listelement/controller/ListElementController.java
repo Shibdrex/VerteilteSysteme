@@ -66,7 +66,7 @@ public class ListElementController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@RequestBody ListElement listElement, @PathVariable Integer id) {
+    public ResponseEntity<?> put(@RequestBody ListElement listElement, @PathVariable(value = "id") Integer id) {
         if (this.manager.isValid(listElement)) {
             ListElementResponse response = this.transformer.getListElement(this.manager.updateElement(listElement, id).getId());
             return ResponseEntity
@@ -77,25 +77,31 @@ public class ListElementController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ListElementResponse> delete(@PathVariable Integer id) {
-            ListElementResponse response = this.transformer.getListElement(id);
-            this.manager.deleteElement(id);
-            return ResponseEntity.ok(response);
+    public ResponseEntity<ListElementResponse> delete(@PathVariable(value = "id") Integer id) {
+        ListElementResponse response = this.transformer.getListElement(id);
+        this.manager.deleteElement(id);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/user/{userID}")
     public List<ListElementResponse> deleteAllListElementsOfUser(
             @PathVariable(value = "userID") Integer userID) {
-            List<ListElementResponse> responses = this.transformer.getAllElementsByUserID(userID);
-            this.manager.deleteAllByUser(userID);
-            return responses;
+        List<ListElementResponse> responses = this.transformer.getAllElementsByUserID(userID);
+        this.manager.deleteAllByUser(userID);
+        return responses;
     }
 
     @DeleteMapping("/list/{listID}")
     public List<ListElementResponse> deleteAllListElementsOfList(
             @PathVariable(value = "listID") Integer listID) {
-            List<ListElementResponse> responses = this.transformer.getAllElementsByListID(listID);
-            this.manager.deleteAllByUser(listID);
-            return responses;
+        List<ListElementResponse> responses = this.transformer.getAllElementsByListID(listID);
+        this.manager.deleteAllByUser(listID);
+        return responses;
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<HttpStatus> deleteAll() {
+        this.manager.deleteAll();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

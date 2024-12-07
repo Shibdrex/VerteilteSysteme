@@ -53,7 +53,7 @@ public class ListUserController {
 
 
     @GetMapping("/{id}")
-    public ListUserResponse getOne(@PathVariable Integer id) {
+    public ListUserResponse getOne(@PathVariable(value = "id") Integer id) {
         return this.transformer.getListUser(id);
     }
 
@@ -71,7 +71,7 @@ public class ListUserController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@RequestBody ListUser user, @PathVariable Integer id) {
+    public ResponseEntity<?> put(@RequestBody ListUser user, @PathVariable(value = "id") Integer id) {
         if (this.manager.isValid(user)) {
             ListUserResponse response = this.transformer.getListUser(this.manager.updateListUser(user, id).getId());
             return ResponseEntity
@@ -82,11 +82,10 @@ public class ListUserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ListUserResponse> delete(@PathVariable Integer id) {
-            ListUserResponse response = this.transformer.getListUser(id);
-            this.manager.deleteListUser(id);
-            return ResponseEntity.ok(response);
-
+    public ResponseEntity<ListUserResponse> delete(@PathVariable(value = "id") Integer id) {
+        ListUserResponse response = this.transformer.getListUser(id);
+        this.manager.deleteListUser(id);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping()

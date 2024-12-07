@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import dh.distributed.systems.List_Service.listUser.exception.ListUserNotFoundException;
 import dh.distributed.systems.List_Service.listUser.model.ListUser;
@@ -78,30 +77,27 @@ public class ListUserManager {
         return this.repository.save(user);
     }
 
-    @Transactional
     public ListUser updateListUser(final ListUser newUser, final Integer id) {
         if (!isValid(newUser)) {
             throw new IllegalArgumentException("Invalid user data.");
         }
-        return repository.findById(id)
+        return this.repository.findById(id)
                 .map(user -> {
                     user.setFirstname(newUser.getFirstname());
                     user.setLastname(newUser.getLastname());
                     user.setPassword(newUser.getPassword());
                     user.setEmail(newUser.getEmail());
-                    return repository.save(user);
+                    return this.repository.save(user);
                 })
                 .orElseGet(() -> this.repository.save(newUser));
     }
 
-    @Transactional
     public void deleteListUser(final Integer id) {
         ListUser user = this.repository.findById(id)
                 .orElseThrow(() -> new ListUserNotFoundException(id));
         this.repository.delete(user);
     }
 
-    @Transactional
     public void deleteAll() {
         this.repository.deleteAll();
     }

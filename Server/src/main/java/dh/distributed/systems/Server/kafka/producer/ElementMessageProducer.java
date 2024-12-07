@@ -13,6 +13,9 @@ public class ElementMessageProducer {
     private final KafkaTemplate<String, ElementMessage> kafkaElementTemplate;
 
     public void sendMessage(String topic, ElementMessage message) {
-        kafkaElementTemplate.send(topic, message);
+        kafkaElementTemplate.executeInTransaction(operations -> {
+            operations.send(topic, message);
+            return true;
+        });
     }
 }

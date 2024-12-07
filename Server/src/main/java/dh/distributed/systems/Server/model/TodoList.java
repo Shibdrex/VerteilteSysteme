@@ -9,6 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TodoList {
 
+    private Integer id;
     private String title;
     private Boolean favorite;
+
+    public TodoList(String title, Boolean favorite) {
+        this.title = title;
+        this.favorite = favorite;
+    }
 }
