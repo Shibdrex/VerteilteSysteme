@@ -18,6 +18,12 @@ import dh.distributed.systems.List_Service.listelement.model.ListElement;
 import dh.distributed.systems.List_Service.messageTracker.tracker.ProcessedMessageTracker;
 import lombok.AllArgsConstructor;
 
+/**
+ * Class to deal with incoming {@link ElementMessage}s from kafka. Executes
+ * database actions based on the message received. Tracks messages if the
+ * database action was successful and if a message that has been added to th
+ * tracking database table is received again the action will not be executed.
+ */
 @Component
 @AllArgsConstructor
 public class ElementMessageConsumer {
@@ -28,12 +34,11 @@ public class ElementMessageConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(ListServiceApplication.class);
 
-    @KafkaListener(
-        topics = "todo-element-send",
-        containerFactory = "kafkaElementMessageListenerContainerFactory")
+    @KafkaListener(topics = "todo-element-send", containerFactory = "kafkaElementMessageListenerContainerFactory")
     public void listen(ElementMessage message) {
-        if (this.tracker.isProcessed(message)) {
-            return;
+        if (this.tracker.isProcessed(message)) { // message has already been processed
+            producer.sendMessage("todo-element-answer", null);
+            return; // send empty message to server and stop further processing
         }
         try {
             ListElement element;
@@ -44,7 +49,8 @@ public class ElementMessageConsumer {
                 case "GET_ONE":
                     element = this.manager.getElement(message.getElementID());
                     response = new ListElementResponse(element);
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(element.getId(), response, null, true));
+                    producer.sendMessage("todo-element-answer",
+                            new ElementAnswer(element.getId(), response, null, true));
                     break;
                 case "GET_ALL":
                     elements = this.manager.getAllElements();
@@ -62,14 +68,17 @@ public class ElementMessageConsumer {
                     producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, responses, true));
                     break;
                 case "CREATE":
-                    element = this.manager.createElement(message.getUserID(), message.getListID(), message.getElement());
+                    element = this.manager.createElement(message.getUserID(), message.getListID(),
+                            message.getElement());
                     response = new ListElementResponse(element);
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(element.getId(), response, null, true));
+                    producer.sendMessage("todo-element-answer",
+                            new ElementAnswer(element.getId(), response, null, true));
                     break;
                 case "UPDATE":
                     element = this.manager.updateElement(message.getElement(), message.getElementID());
                     response = new ListElementResponse(element);
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(element.getId(), response, null, true));
+                    producer.sendMessage("todo-element-answer",
+                            new ElementAnswer(element.getId(), response, null, true));
                     break;
                 case "DELETE":
                     this.manager.deleteElement(message.getElementID());
@@ -87,15 +96,15 @@ public class ElementMessageConsumer {
                     this.manager.deleteAll();
                     producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, null, true));
                     break;
-                default:
+                default: // if no action was given or action is invalid, send message to server informing
+                         // about this
                     producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, null, false));
                     break;
             }
         } catch (Exception ex) {
             log.info("Something went wrong: " + ex);
         }
-        this.tracker.markProcessed(message);
+        this.tracker.markProcessed(message); // adds the just processed message to the tracking table
     }
-
 
 }

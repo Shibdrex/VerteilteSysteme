@@ -12,10 +12,14 @@ import dh.distributed.systems.List_Service.messageTracker.manager.ProcessedMessa
 import dh.distributed.systems.List_Service.messageTracker.model.ProcessedMessage;
 import lombok.AllArgsConstructor;
 
+/**
+ * Handles converting {@link ProcessedMessage} objects to
+ * {@link ProcessedMessageResponse} objects, which contain HATEOAS-links.
+ */
 @AllArgsConstructor
 @Service
 public class ProcessedMessageTransformer {
-    
+
     private final ProcessedMessageManager manager;
     private final ProcessedMessageModelAssembler assembler;
 

@@ -13,7 +13,7 @@ public class ElementAnswerProducer {
     private final KafkaTemplate<String, ElementAnswer> kafkaElementTemplate;
 
     public void sendMessage(String topic, ElementAnswer message) {
-        kafkaElementTemplate.executeInTransaction(operations -> {
+        kafkaElementTemplate.executeInTransaction(operations -> { // execute in transaction to ensure idempotence
             operations.send(topic, message);
             return true;
         });

@@ -9,10 +9,13 @@ import dh.distributed.systems.List_Service.messageTracker.manager.ProcessedMessa
 import dh.distributed.systems.List_Service.messageTracker.model.ProcessedMessage;
 import lombok.AllArgsConstructor;
 
+/**
+ * Offers methods to check and mark messages.
+ */
 @AllArgsConstructor
 @Service
 public class ProcessedMessageTracker {
-    
+
     private final ProcessedMessageManager manager;
 
     public Boolean isProcessed(TodoMessage message) {
@@ -31,10 +34,10 @@ public class ProcessedMessageTracker {
 
     public void markProcessed(TodoMessage message) {
         if (message instanceof ElementMessage elementMessage) {
-            this.manager.creatProcessedMessage(new ProcessedMessage(elementMessage));
+            this.manager.createProcessedMessage(new ProcessedMessage(elementMessage));
         }
         if (message instanceof ListMessage listMessage) {
-            this.manager.creatProcessedMessage(new ProcessedMessage(listMessage));
+            this.manager.createProcessedMessage(new ProcessedMessage(listMessage));
         }
     }
 }

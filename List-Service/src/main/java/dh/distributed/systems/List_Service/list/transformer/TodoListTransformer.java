@@ -13,6 +13,10 @@ import dh.distributed.systems.List_Service.list.manager.TodoListManager;
 import dh.distributed.systems.List_Service.list.model.TodoList;
 import lombok.AllArgsConstructor;
 
+/**
+ * Handles converting {@link TodoList} objects to {@link TodoListResponse}
+ * objects, which contain HATEOAS-links.
+ */
 @AllArgsConstructor
 @Service
 public class TodoListTransformer {
@@ -20,12 +24,10 @@ public class TodoListTransformer {
     private final TodoListManager manager;
     private final TodoListModelAssembler assembler;
 
-
     private TodoListResponse transformToResponse(TodoList list) {
         EntityModel<TodoList> model = this.assembler.toModel(list);
         return new TodoListResponse(list, model);
     }
-
 
     public TodoListResponse getTodoList(Integer ID) {
         TodoList list = this.manager.getList(ID);
@@ -33,13 +35,11 @@ public class TodoListTransformer {
         return new TodoListResponse(list, model);
     }
 
-
     public List<TodoListResponse> getAllTodoLists() {
         return this.manager.getAllLists().stream()
                 .map(this::transformToResponse)
                 .collect(Collectors.toList());
     }
-
 
     public List<TodoListResponse> getAllTodoListsByUserID(Integer userID) {
         List<TodoList> found = this.manager.getAllListsByUserID(userID);

@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class represents a basic message, that is used for kafka messaging.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

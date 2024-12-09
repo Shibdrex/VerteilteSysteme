@@ -11,13 +11,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class represents the list-user entity.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "list_user",
-    uniqueConstraints = 
-            @UniqueConstraint(columnNames = {"email"}))
+@Table(name = "list_user", uniqueConstraints = @UniqueConstraint(columnNames = { "email" }))
 public class ListUser {
 
     @Id

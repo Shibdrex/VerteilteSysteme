@@ -19,7 +19,7 @@ public class ListAnswerSerializer implements Serializer<ListAnswer> {
     
 
     static {
-        mapper.coercionConfigFor(Enum.class)
+        mapper.coercionConfigFor(Enum.class) // if a enum field is empty string replace with null
                 .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
     }
     @Override

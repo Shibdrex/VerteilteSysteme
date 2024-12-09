@@ -13,7 +13,7 @@ public class ListAnswerProducer {
     private final KafkaTemplate<String, ListAnswer> kafkaListTemplate;
 
     public void sendMessage(String topic, ListAnswer answer) {
-        kafkaListTemplate.executeInTransaction(operations -> {
+        kafkaListTemplate.executeInTransaction(operations -> { // execute in transaction to ensure idempotence
             operations.send(topic, answer);
             return true;
         });

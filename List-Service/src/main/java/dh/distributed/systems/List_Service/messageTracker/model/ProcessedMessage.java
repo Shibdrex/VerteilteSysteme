@@ -23,13 +23,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class represents the processed message entity.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "processed_message")
 public class ProcessedMessage {
- 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -43,7 +46,6 @@ public class ProcessedMessage {
     @Column(name = "action", columnDefinition = "TEXT", nullable = false)
     private String action;
 
-
     @Column(name = "listID", columnDefinition = "INT", nullable = true)
     private Integer listId;
 
@@ -52,7 +54,6 @@ public class ProcessedMessage {
 
     @Column(name = "favorite", columnDefinition = "BOOLEAN", nullable = true)
     private Boolean favorite;
-
 
     @Column(name = "elementID", columnDefinition = "INT", nullable = true)
     private Integer elementId;

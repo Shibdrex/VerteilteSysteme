@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import jakarta.persistence.EntityManagerFactory;
 
+/**
+ * Config class to make one Transaction Manager the primary one, so that there will be no confusion.
+ */
 @Configuration
 @EnableTransactionManagement
 public class TransactionManagerConfig {

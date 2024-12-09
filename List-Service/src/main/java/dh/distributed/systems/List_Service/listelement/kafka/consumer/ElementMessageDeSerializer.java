@@ -18,9 +18,10 @@ public class ElementMessageDeSerializer implements Deserializer<ElementMessage> 
             .findAndAddModules()
             .build();
     static {
-        mapper.coercionConfigFor(Enum.class)
+        mapper.coercionConfigFor(Enum.class) // if a enum field is empty string replace with null
                 .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
     }
+
     @Override
     public ElementMessage deserialize(String topic, byte[] data) {
         try {

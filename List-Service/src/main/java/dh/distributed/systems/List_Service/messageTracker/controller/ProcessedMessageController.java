@@ -21,12 +21,17 @@ import dh.distributed.systems.List_Service.messageTracker.model.ProcessedMessage
 import dh.distributed.systems.List_Service.messageTracker.transformer.ProcessedMessageTransformer;
 import lombok.AllArgsConstructor;
 
+/**
+ * Class is a rest-controller for the processed messages. Uses a transformer to
+ * create DTOs of the database models, these DTOs are returned to the client
+ * making the requests. Injected manager handles database transactions.
+ */
 @CrossOrigin
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/processed-messages")
 public class ProcessedMessageController {
-    
+
     private final ProcessedMessageTransformer transformer;
     private final ProcessedMessageManager manager;
 
@@ -43,7 +48,8 @@ public class ProcessedMessageController {
     @PostMapping()
     public ResponseEntity<ProcessedMessageResponse> post(@RequestBody ProcessedMessage message) {
         if (this.manager.isValid(message)) {
-            ProcessedMessageResponse response = this.transformer.getProcessedMessage(this.manager.creatProcessedMessage(message).getId());
+            ProcessedMessageResponse response = this.transformer
+                    .getProcessedMessage(this.manager.createProcessedMessage(message).getId());
             return ResponseEntity
                     .created(URI.create(response.getLinks().get("self")))
                     .body(response);
@@ -54,7 +60,8 @@ public class ProcessedMessageController {
     @PutMapping("/{id}")
     public ResponseEntity<?> put(@RequestBody ProcessedMessage message, @PathVariable Integer id) {
         if (this.manager.isValid(message)) {
-            ProcessedMessageResponse response = this.transformer.getProcessedMessage(this.manager.updateProcessedMessage(message, id).getId());
+            ProcessedMessageResponse response = this.transformer
+                    .getProcessedMessage(this.manager.updateProcessedMessage(message, id).getId());
             return ResponseEntity
                     .created(URI.create(response.getLinks().get("self")))
                     .body(response);

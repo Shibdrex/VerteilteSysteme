@@ -7,13 +7,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * Class represents a dto of a message that is received coming from the server.
+ */
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ListMessage extends TodoMessage {
     private TodoList list;
 
-    public ListMessage() {super();}
+    public ListMessage() {
+        super();
+    }
 
     public ListMessage(UUID messageID, Integer userID, Integer listID, String action, TodoList list) {
         super(messageID, userID, listID, action);

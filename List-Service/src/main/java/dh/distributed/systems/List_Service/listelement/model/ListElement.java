@@ -28,6 +28,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class represents the list-element entity.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -54,7 +57,7 @@ public class ListElement {
     @Temporal(TemporalType.DATE)
     @Column(name = "dueDate", columnDefinition = "DATE", nullable = false)
     private Date dueDate;
-    
+
     @Column(name = "name", columnDefinition = "TEXT", nullable = false)
     private String name;
 
@@ -63,12 +66,12 @@ public class ListElement {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private ListUser user;
-    
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "listID", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private TodoList list; 
+    private TodoList list;
 
     public ListElement(Boolean status, ElementPriority priority, Set<String> tags, Date dueDate, String name) {
         this.status = status;

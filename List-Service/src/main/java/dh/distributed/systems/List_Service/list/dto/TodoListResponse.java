@@ -10,6 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data transfer object of {@link TodoList}, adds HATEOAS-links.
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

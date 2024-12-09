@@ -21,6 +21,11 @@ import dh.distributed.systems.List_Service.listUser.model.ListUser;
 import dh.distributed.systems.List_Service.listUser.transformer.ListUserTransformer;
 import lombok.AllArgsConstructor;
 
+/**
+ * Class is a rest-controller for the list-users. Uses a transformer to create
+ * DTOs of the database models, these DTOs are returned to the client making the
+ * requests. Injected manager handles database transactions.
+ */
 @CrossOrigin
 @AllArgsConstructor
 @RestController

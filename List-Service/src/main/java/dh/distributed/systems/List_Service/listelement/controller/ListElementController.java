@@ -20,6 +20,11 @@ import dh.distributed.systems.List_Service.listelement.model.ListElement;
 import dh.distributed.systems.List_Service.listelement.transformer.ListElementTransformer;
 import lombok.AllArgsConstructor;
 
+/**
+ * Class is a rest-controller for the list-elements. Uses a transformer to
+ * create DTOs of the database models, these DTOs are returned to the client
+ * making the requests. Injected manager handles database transactions.
+ */
 @CrossOrigin
 @AllArgsConstructor
 @RestController
@@ -57,7 +62,8 @@ public class ListElementController {
             @PathVariable(value = "listID") Integer listID,
             @RequestBody ListElement listElement) {
         if (this.manager.isValid(listElement)) {
-            ListElementResponse response = this.transformer.getListElement(this.manager.createElement(userID, listID, listElement).getId());
+            ListElementResponse response = this.transformer
+                    .getListElement(this.manager.createElement(userID, listID, listElement).getId());
             return ResponseEntity
                     .created(URI.create(response.getLinks().get("self")))
                     .body(response);
@@ -68,7 +74,8 @@ public class ListElementController {
     @PutMapping("/{id}")
     public ResponseEntity<?> put(@RequestBody ListElement listElement, @PathVariable(value = "id") Integer id) {
         if (this.manager.isValid(listElement)) {
-            ListElementResponse response = this.transformer.getListElement(this.manager.updateElement(listElement, id).getId());
+            ListElementResponse response = this.transformer
+                    .getListElement(this.manager.updateElement(listElement, id).getId());
             return ResponseEntity
                     .created(URI.create(response.getLinks().get("self")))
                     .body(response);

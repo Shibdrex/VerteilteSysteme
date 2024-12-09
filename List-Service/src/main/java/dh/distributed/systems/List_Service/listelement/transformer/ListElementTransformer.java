@@ -13,6 +13,10 @@ import dh.distributed.systems.List_Service.listelement.manager.ListElementManage
 import dh.distributed.systems.List_Service.listelement.model.ListElement;
 import lombok.AllArgsConstructor;
 
+/**
+ * Handles converting {@link ListElement} objects to {@link ListElementResponse}
+ * objects, which contain HATEOAS-links.
+ */
 @AllArgsConstructor
 @Service
 public class ListElementTransformer {

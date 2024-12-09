@@ -20,6 +20,12 @@ import dh.distributed.systems.List_Service.list.model.TodoList;
 import dh.distributed.systems.List_Service.list.transformer.TodoListTransformer;
 import lombok.AllArgsConstructor;
 
+/**
+ * Class is a rest-controller for the todo-lists.
+ * Uses a transformer to create DTOs of the database models, these DTOs are
+ * returned to the client making the request.
+ * Injected manager handles database transactions.
+ */
 @CrossOrigin
 @AllArgsConstructor
 @RestController

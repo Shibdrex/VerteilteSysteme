@@ -13,6 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data transfer object of {@link ListElement}, adds HATEOAS-links.
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

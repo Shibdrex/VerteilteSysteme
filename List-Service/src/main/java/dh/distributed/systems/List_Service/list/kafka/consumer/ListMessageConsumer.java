@@ -18,24 +18,29 @@ import dh.distributed.systems.List_Service.list.model.TodoList;
 import dh.distributed.systems.List_Service.messageTracker.tracker.ProcessedMessageTracker;
 import lombok.AllArgsConstructor;
 
+/**
+ * Class to deal with incoming {@link ListMessage}s from kafka. Executes
+ * database actions based on the message received. Tracks messages if the
+ * database action was successful and if a message that has been added to the
+ * tracking database table is received again the action will not be executed.
+ */
 @Component
 @AllArgsConstructor
 public class ListMessageConsumer {
-    
+
     private final TodoListManager manager;
     private final ProcessedMessageTracker tracker;
     private final ListAnswerProducer producer;
 
     private static final Logger log = LoggerFactory.getLogger(ListServiceApplication.class);
 
-    @KafkaListener(
-        topics = "todo-list-send",
-        containerFactory = "kafkaListMessageListenerContainerFactory")
+    @KafkaListener(topics = "todo-list-send", containerFactory = "kafkaListMessageListenerContainerFactory")
     public void listen(ListMessage message) {
-        if (this.tracker.isProcessed(message)) {
-            return;
+        if (this.tracker.isProcessed(message)) { // message has already been processed
+            producer.sendMessage("todo-list-answer", null);
+            return; // send empty message to server and stop further processing
         }
-        try {        
+        try {
             TodoList list;
             TodoListResponse response;
             List<TodoList> lists;
@@ -78,13 +83,13 @@ public class ListMessageConsumer {
                     this.manager.deleteAll();
                     producer.sendMessage("todo-list-answer", new ListAnswer(null, null, null, true));
                     break;
-                default:
+                default: // if no action was given or action is invalid, send message to server informing about this
                     producer.sendMessage("todo-list-answer", new ListAnswer(null, null, null, false));
                     break;
             }
         } catch (Exception ex) {
             log.info("Something went wrong: " + ex);
         }
-        this.tracker.markProcessed(message);
+        this.tracker.markProcessed(message); // adds the just processed message to the tracking table
     }
 }
