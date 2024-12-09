@@ -1,13 +1,7 @@
 package dh.distributed.systems.List_Service.listelement.controller;
 
+import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,112 +14,101 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dh.distributed.systems.List_Service.listelement.assembler.ListElementModelAssembler;
+import dh.distributed.systems.List_Service.listelement.dto.ListElementResponse;
 import dh.distributed.systems.List_Service.listelement.manager.ListElementManager;
 import dh.distributed.systems.List_Service.listelement.model.ListElement;
+import dh.distributed.systems.List_Service.listelement.transformer.ListElementTransformer;
 import lombok.AllArgsConstructor;
 
+/**
+ * Class is a rest-controller for the list-elements. Uses a transformer to
+ * create DTOs of the database models, these DTOs are returned to the client
+ * making the requests. Injected manager handles database transactions.
+ */
 @CrossOrigin
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/list-elements")
 public class ListElementController {
 
+    private final ListElementTransformer transformer;
     private final ListElementManager manager;
 
-    private final ListElementModelAssembler assembler;
-
-
     @GetMapping()
-    public CollectionModel<EntityModel<ListElement>> get() {
-        List<EntityModel<ListElement>> listElements = this.manager.getAllElements().stream()
-                .map(this.assembler::toModel)
-                .collect(Collectors.toList());
-
-        return CollectionModel.of(listElements, linkTo(methodOn(ListElementController.class).get()).withSelfRel());
+    public List<ListElementResponse> get() {
+        return this.transformer.getAllListElements();
     }
 
-    @GetMapping("/users/{userID}/elements")
-    public CollectionModel<EntityModel<ListElement>> getAllListElementsByUserId(
+    @GetMapping("/user/{userID}")
+    public List<ListElementResponse> getAllListElementsByUserId(
             @PathVariable(value = "userID") Integer userID) {
-        List<EntityModel<ListElement>> listElements = this.manager.getAllElementsByUserID(userID).stream()
-                .map(this.assembler::toModel)
-                .collect(Collectors.toList());
-
-        return CollectionModel.of(listElements, linkTo(methodOn(ListElementController.class).get()).withSelfRel());
+        return this.transformer.getAllElementsByUserID(userID);
     }
 
-    @GetMapping("/lists/{listID}/elements")
-    public CollectionModel<EntityModel<ListElement>> getAllListElementsByListId(
+    @GetMapping("/lists/{listID}")
+    public List<ListElementResponse> getAllListElementsByListId(
             @PathVariable(value = "listID") Integer listID) {
-        List<EntityModel<ListElement>> listElements = this.manager.getAllElementsByListID(listID).stream()
-                .map(this.assembler::toModel)
-                .collect(Collectors.toList());
-        
-        return CollectionModel.of(listElements, linkTo(methodOn(ListElementController.class).get()).withSelfRel());
+        return this.transformer.getAllElementsByListID(listID);
     }
 
     @GetMapping("/{id}")
-    public EntityModel<ListElement> getOne(@PathVariable(value = "id") Integer id) {
-        return this.assembler.toModel(this.manager.getElement(id));
+    public ListElementResponse getOne(@PathVariable(value = "id") Integer id) {
+        return this.transformer.getListElement(id);
     }
 
-    @PostMapping("/users/{userID}/lists/{listID}")
-    public ResponseEntity<EntityModel<ListElement>> post(
+    @PostMapping("/user/{userID}/list/{listID}")
+    public ResponseEntity<ListElementResponse> post(
             @PathVariable(value = "userID") Integer userID,
             @PathVariable(value = "listID") Integer listID,
             @RequestBody ListElement listElement) {
         if (this.manager.isValid(listElement)) {
-            EntityModel<ListElement> model = this.assembler.toModel(this.manager.createElement(userID, listID, listElement));
+            ListElementResponse response = this.transformer
+                    .getListElement(this.manager.createElement(userID, listID, listElement).getId());
             return ResponseEntity
-                    .created(model.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                    .body(model);
+                    .created(URI.create(response.getLinks().get("self")))
+                    .body(response);
         }
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@RequestBody ListElement listElement, @PathVariable Integer id) {
+    public ResponseEntity<?> put(@RequestBody ListElement listElement, @PathVariable(value = "id") Integer id) {
         if (this.manager.isValid(listElement)) {
-            EntityModel<ListElement> model = this.assembler.toModel(this.manager.updateElement(listElement, id));
+            ListElementResponse response = this.transformer
+                    .getListElement(this.manager.updateElement(listElement, id).getId());
             return ResponseEntity
-                    .created(model.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                    .body(model);
+                    .created(URI.create(response.getLinks().get("self")))
+                    .body(response);
         }
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ListElement> delete(@PathVariable Integer id) {
-        if (id >= 0) {
-            ListElement deletedElem = this.manager.getElement(id);
-            this.manager.deleteElement(id);
-            return ResponseEntity.ok(deletedElem);
-        }
-        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
+    public ResponseEntity<ListElementResponse> delete(@PathVariable(value = "id") Integer id) {
+        ListElementResponse response = this.transformer.getListElement(id);
+        this.manager.deleteElement(id);
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/users/{userID}")
-    public CollectionModel<EntityModel<ListElement>> deleteAllListElementsOfUser(@PathVariable(value = "userID") Integer userID) {
-        if (userID >= 0) {
-            List<EntityModel<ListElement>> listElements = this.manager.getAllElementsByUserID(userID).stream()
-                    .map(this.assembler::toModel)
-                    .collect(Collectors.toList());
-            this.manager.deleteAllByUser(userID);
-            return CollectionModel.of(listElements, linkTo(methodOn(ListElementController.class).get()).withSelfRel());
-        }
-        return CollectionModel.empty();
+    @DeleteMapping("/user/{userID}")
+    public List<ListElementResponse> deleteAllListElementsOfUser(
+            @PathVariable(value = "userID") Integer userID) {
+        List<ListElementResponse> responses = this.transformer.getAllElementsByUserID(userID);
+        this.manager.deleteAllByUser(userID);
+        return responses;
     }
 
-    @DeleteMapping("/lists/{listID}")
-    public CollectionModel<EntityModel<ListElement>> deleteAllListElementsOfList(@PathVariable(value = "listID") Integer listID) {
-        if (listID >= 0) {
-            List<EntityModel<ListElement>> listElements = this.manager.getAllElementsByListID(listID).stream()
-                    .map(this.assembler::toModel)
-                    .collect(Collectors.toList());
-            this.manager.deleteAllByUser(listID);
-            return CollectionModel.of(listElements, linkTo(methodOn(ListElementController.class).get()).withSelfRel());
-        }
-        return CollectionModel.empty();
+    @DeleteMapping("/list/{listID}")
+    public List<ListElementResponse> deleteAllListElementsOfList(
+            @PathVariable(value = "listID") Integer listID) {
+        List<ListElementResponse> responses = this.transformer.getAllElementsByListID(listID);
+        this.manager.deleteAllByUser(listID);
+        return responses;
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<HttpStatus> deleteAll() {
+        this.manager.deleteAll();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -4,19 +4,19 @@ services:
       context: ./
       dockerfile: User-Service/Dockerfile
     image: user-service:1.0.0
-    ports:
-      - "5001:8080"
+    expose:
+      - "8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/${DB_NAME}
-      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+    env_file:
+      - .env
     depends_on:
       mariadb:
         condition: service_healthy
     restart: unless-stopped
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 3
       resources:
         limits:
           cpus: '2'
@@ -31,19 +31,19 @@ services:
       context: ./
       dockerfile: List-Service/Dockerfile
     image: list-service:1.0.0
-    ports:
-      - "5002:8080"
+    expose:
+      - "8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/${DB_NAME}
-      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+    env_file:
+      - .env
     depends_on:
       mariadb:
         condition: service_healthy
     restart: unless-stopped
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 3
       resources:
         limits:
           cpus: '2'
@@ -59,11 +59,13 @@ services:
       dockerfile: Server/Dockerfile
     image: server:1.0.0
     ports:
-      - "5003:8080"
+      - "8080"
+    env_file:
+      - .env
     restart: unless-stopped
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 3
       resources:
         limits:
           cpus: '2'
@@ -93,7 +95,7 @@ services:
   load-balancer:
     image: nginx:latest
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:z
     depends_on:
       - user-service
       - list-service
@@ -112,16 +114,42 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
 
-  kafka:
+  kafka_one:
     image: confluentinc/cp-kafka:7.5.0
-    container_name: kafka
+    container_name: kafka_one
     ports:
       - "9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_one:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+    depends_on:
+      - zookeeper
+
+  kafka_two:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka_two
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_two:9093
+    depends_on:
+      - zookeeper
+
+  kafka_three:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka_three
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_three:9094
     depends_on:
       - zookeeper

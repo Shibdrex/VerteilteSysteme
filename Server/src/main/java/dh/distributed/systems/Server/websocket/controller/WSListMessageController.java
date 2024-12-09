@@ -1,17 +1,19 @@
 package dh.distributed.systems.Server.websocket.controller;
 
+import java.util.UUID;
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import dh.distributed.systems.Server.kafka.producer.ElementMessageProducer;
 import dh.distributed.systems.Server.kafka.producer.ListMessageProducer;
 import dh.distributed.systems.Server.message.ElementMessage;
-import dh.distributed.systems.Server.message.ElementMessageAnswer;
 import dh.distributed.systems.Server.message.ListMessage;
-import dh.distributed.systems.Server.message.ListMessageAnswer;
 import lombok.AllArgsConstructor;
 
+/**
+ * Handles incoming websocket messages and sending kafka messages.
+ */
 @AllArgsConstructor
 @Controller
 public class WSListMessageController {
@@ -20,33 +22,30 @@ public class WSListMessageController {
 
     private final ListMessageProducer listProducer;
 
+    /**
+     * Method receives websocket messages from the list-topic then generates a UUID
+     * to add to the
+     * messages and send it to the list-send-kafka-topic.
+     * 
+     * @param message to be forwarded to kafka
+     * @throws Exception if sending the message to kafka fails
+     */
     @MessageMapping("/list")
-    @SendTo("/topic/list-answer")
-    public ListMessageAnswer listMessage(ListMessage message) throws Exception {
-        listProducer.sendMessage("list", message);
-        return new ListMessageAnswer(
-                "Message sent, " 
-                + "userID=" + message.userID() 
-                + ",listID=" + message.listID()
-                + ",action=" + message.action() 
-                + ",list:title=" + message.list().getTitle() 
-                + ",favorite=" + message.list().getFavorite());
+    public void listMessage(ListMessage message) throws Exception {
+        message.setMessageID(UUID.randomUUID());
+        listProducer.sendMessage("todo-list-send", message);
     }
 
+    /**
+     * Method receives websocket messages from the element-topic then generates a
+     * UUID to add to the messages and send it to the element-send-kafka-topic.
+     * 
+     * @param message to be forwarded to kafka
+     * @throws Exception if sending the message to kafka fails
+     */
     @MessageMapping("/element")
-    @SendTo("/topic/element-answer")
-    public ElementMessageAnswer elementMessage(ElementMessage message) throws Exception {
-        elementProducer.sendMessage("listelement", message);
-        return new ElementMessageAnswer(
-                "Message sent, "
-                + "userID=" + message.userID()
-                + ",listID=" + message.listID()
-                + ",elementID=" + message.elementID()
-                + ",action=" + message.action()
-                + ",element:name=" + message.element().getName()
-                + ",status=" + message.element().getStatus()
-                + ",priority=" + message.element().getPriority().toString()
-                + ",tags=" + message.element().getTags().toString()
-                + ",dueDate=" + message.element().getDueDate().toString());
+    public void elementMessage(ElementMessage message) throws Exception {
+        message.setMessageID(UUID.randomUUID());
+        elementProducer.sendMessage("todo-element-send", message);
     }
 }
