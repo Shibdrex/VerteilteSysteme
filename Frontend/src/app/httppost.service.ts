@@ -1,62 +1,66 @@
 import { Injectable } from '@angular/core';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { webSocket } from 'rxjs/webSocket';
 import { Observable } from 'rxjs';
+import { WebSocketSubject } from 'rxjs/internal/observable/dom/WebSocketSubject'; 
 
 @Injectable({
   providedIn: 'root',
 })
 export class WebSocketService {
-  private socket$!: WebSocketSubject<any>;
-  private readonly serverUrl = 'ws://localhost:5000/server'; // WebSocket server url
 
-  constructor() {}
 
-  
-  connect(): void {//creates a connection to the Websocket with the URL
-    if (!this.socket$ || this.socket$.closed) {
-      this.socket$ = webSocket(this.serverUrl);
-      console.log('WebSocket connection opened.');
-    }
+subject: WebSocketSubject<any> =  webSocket('ws://localhost:5000/server');
+
+connect(): void {//creates a connection to the Websocket with the URL
+      this.subject.subscribe({
+        next: () => console.log("Connected"),
+      error: (err) => console.error("WebSocket error", err),
+      complete: () => console.log("WebSocket connection closed.")
+    });
   }
 
-  
   sendMessage(topic: string, message: any): void {//Sends new created lists via WebSocketconnection
-    if (this.socket$) {
-      console.log(`Sending message to topic ${topic}:`, message);//controll/debug log
-      this.socket$.next({ topic, message });
-    } else {
-      console.error('WebSocket connection is not established.');
+    if (this.subject.closed) { 
+      console.error("WebSocket connection is closed. Cannot send message.");
+      return;
     }
+    this.subject.next({ topic, message });
+    console.log("Message sent:", topic, message)
   }
 
+  closeConnection(): void {//closes WebSocket connection
+        this.subject.complete()
+        console.log('WebSocket connection closed.');//controll/debug log
+      }
 
 
-  //gets all lists from db which have a certain topic at start and when new lists are created
+      // //gets all lists from db which have a certain topic at start and when new lists are created
   subscribeToTopic(topic: string): Observable<any> {
-    if (!this.socket$) {
+    if (this.subject.closed) {
       console.error('WebSocket connection is not established.');
       throw new Error('WebSocket connection is not established.');
     }
     return new Observable((observer) => {
-      this.socket$.subscribe({
+      this.subject.subscribe({
         next: (msg) => {
-          console.log("get lists from DB")//controll/debug log
-          if (msg?.topic === topic) {     // WebSocket topic filter
+          console.log("Received message from DB");
+          if (msg?.topic === topic) {  // WebSocket topic filter
             observer.next(msg.message);
-            console.log(msg)
+            console.log(msg);
           }
         },
-        error: (err) => observer.error(err),
-        complete: () => observer.complete(),
+        error: (err) => {
+          console.error("WebSocket error:", err);
+          observer.error(err);
+        },
+        complete: () => {
+          console.log("WebSocket connection complete");
+          observer.complete();
+        }
       });
     });
   }
 
-  
-  closeConnection(): void {//closes WebSocket connection
-    if (this.socket$) {
-      this.socket$.complete();
-      console.log('WebSocket connection closed.');//controll/debug log
-    }
-  }
+
 }
+ 

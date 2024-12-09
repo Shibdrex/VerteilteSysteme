@@ -17,11 +17,11 @@
 
     <div *ngFor="let todo of item.list.todos">
         <ng-container *ngIf="todo.isChecked; else NotCheckt"> 
-            <input type="checkbox" [(ngModel)]="isChecked" id="To-Do" name="To-Do" value="To-Do">
+            <input type="checkbox" [(ngModel)]="todo.isChecked" id="To-Do" name="To-Do" value="To-Do">
         <label for="To-Do" id="To-Do">{{todo.name}}</label><br>
         </ng-container>
         
-        <ng-template>
+        <ng-template #NotCheckt>
             <input type="checkbox" id="To-Do" name="To-Do" value="To-Do">
             <label for="To-Do" id="To-Do">{{todo.name}}</label><br> 
         </ng-template>
@@ -29,5 +29,5 @@
 
 
     <button (click)=Remove() type="button" class="btn btn-danger">Entfernen</button>
-    <a href="/list"><button type="button" class="btn btn-primary">zurück</button></a>
+    <a [routerLink]="['/list']"><button type="button" class="btn btn-primary">zurück</button></a>
 </div>

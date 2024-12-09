@@ -20,6 +20,7 @@ export class ListViewComponent {
   
   Remove(){
    console.log(this.item)
+  
   }
 
   ChangeNotFav(){

@@ -14,28 +14,26 @@ import { filter, map, Observable, Subscription } from 'rxjs';
 })
 export class AppComponent implements OnInit{
 
-  title = 'Frontend';
-  item: string = "Test Titel"
+  item: string = "Test Titel" //single list 
 
-  filter$!: Observable<number> ;
-  currentId: number | null = null;
+  currentId: number | null = null; //used in ngOnInit()
 
-  private route = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute); //
   routSubscription!: Subscription;
   
-  paramValue!: string| null;
+
 
   constructor(private router:Router){  }
 
-  ngOnInit() {
-    this.paramValue = this.route.snapshot.paramMap.get('id'); console.log(this.paramValue);
-    console.log("Das ist paramValue: " + this.paramValue)
+  ngOnInit() {//gets the id of the currently shown list via URL with subscription
+              //the subscription watches for changes in the URL, when change accures the URl part id gets read
+    
     this.routSubscription = this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
+      .pipe(filter((event) => event instanceof NavigationEnd))//watch changes from URLend
       .subscribe(() => {
-        const id = this.route.snapshot.queryParamMap.get('id');
-        console.log(id)
-        this.currentId = id ? +id : null;
+        const id = this.route.snapshot.queryParamMap.get('id'); //get the current id part of URL
+        console.log(id)                   
+        this.currentId = id ? +id : null; //changes string variable to number
         console.log('Aktuelle ID:', this.currentId);
       });
   
@@ -45,7 +43,7 @@ export class AppComponent implements OnInit{
 
 
 
-  lisde = [
+  lisde = [ //example list
     {
       "id": 1,
       "userID": 1,
@@ -75,11 +73,11 @@ export class AppComponent implements OnInit{
         "todos":[
               {"name": "beispiel",
               "status": true,
-              "isChecked": true
+              "isChecked": false
               },
               {"name": "putzen",
                 "status": false,
-                "isChecked": false
+                "isChecked": true
               }
             ]
       }
@@ -113,11 +111,11 @@ export class AppComponent implements OnInit{
         "todos":[
               {"name": "spaß",
               "status": true,
-              "isChecked": true
+              "isChecked": false
               },
               {"name": "lernen",
                 "status": false,
-                "isChecked": false
+                "isChecked": true
               },
               {"name": "Hausaufgaben",
                 "status": true,
