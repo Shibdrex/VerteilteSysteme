@@ -21,6 +21,11 @@ import dh.distributed.systems.List_Service.listUser.model.ListUser;
 import dh.distributed.systems.List_Service.listUser.transformer.ListUserTransformer;
 import lombok.AllArgsConstructor;
 
+/**
+ * Class is a rest-controller for the list-users. Uses a transformer to create
+ * DTOs of the database models, these DTOs are returned to the client making the
+ * requests. Injected manager handles database transactions.
+ */
 @CrossOrigin
 @AllArgsConstructor
 @RestController
@@ -49,7 +54,7 @@ public class ListUserController {
     }
 
     @GetMapping("/{id}")
-    public ListUserResponse getOne(@PathVariable Integer id) {
+    public ListUserResponse getOne(@PathVariable(value = "id") Integer id) {
         return this.transformer.getListUser(id);
     }
 
@@ -65,7 +70,7 @@ public class ListUserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@RequestBody ListUser user, @PathVariable Integer id) {
+    public ResponseEntity<?> put(@RequestBody ListUser user, @PathVariable(value = "id") Integer id) {
         if (this.manager.isValid(user)) {
             ListUserResponse response = this.transformer.getListUser(this.manager.updateListUser(user, id).getId());
             return ResponseEntity
@@ -76,7 +81,7 @@ public class ListUserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ListUserResponse> delete(@PathVariable Integer id) {
+    public ResponseEntity<ListUserResponse> delete(@PathVariable(value = "id") Integer id) {
         ListUserResponse response = this.transformer.getListUser(id);
         this.manager.deleteListUser(id);
         return ResponseEntity.ok(response);

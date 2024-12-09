@@ -13,6 +13,10 @@ import dh.distributed.systems.List_Service.listUser.manager.ListUserManager;
 import dh.distributed.systems.List_Service.listUser.model.ListUser;
 import lombok.AllArgsConstructor;
 
+/**
+ * Handles converting {@link ListUser} objects to {@link ListUserResponse}
+ * objects, which contain HATEOAS-links.
+ */
 @AllArgsConstructor
 @Service
 public class ListUserTransformer {

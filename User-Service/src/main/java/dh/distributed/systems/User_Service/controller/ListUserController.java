@@ -21,6 +21,11 @@ import dh.distributed.systems.User_Service.model.ListUser;
 import dh.distributed.systems.User_Service.transform.ListUserTransformer;
 import lombok.AllArgsConstructor;
 
+/**
+ * Class is a rest-controller for the list-users. Uses a transformer to create
+ * DTOs of the database models, these DTOs are returned to the client making the
+ * requests. Injected manager handles database transactions.
+ */
 @CrossOrigin
 @AllArgsConstructor
 @RestController
@@ -30,12 +35,10 @@ public class ListUserController {
     private final ListUserTransformer transformer;
     private final ListUserManager manager;
 
-
     @GetMapping()
     public List<ListUserResponse> get() {
         return this.transformer.getAllAssistantUsers();
     }
-
 
     @GetMapping("/containing")
     public List<ListUserResponse> getAllListUsers(@RequestParam(required = false, name = "firstname") String firstname,
@@ -45,18 +48,15 @@ public class ListUserController {
         return this.transformer.getAllListUsersByLastname(lastname);
     }
 
-
     @GetMapping("/email")
     public List<ListUserResponse> findByEmail(@RequestParam(required = false, name = "email") String email) {
         return this.transformer.findListUserByEmail(email);
     }
 
-
     @GetMapping("/{id}")
-    public ListUserResponse getOne(@PathVariable Integer id) {
+    public ListUserResponse getOne(@PathVariable(value = "id") Integer id) {
         return this.transformer.getListUser(id);
     }
-
 
     @PostMapping()
     public ResponseEntity<ListUserResponse> post(@RequestBody ListUser user) {
@@ -69,9 +69,8 @@ public class ListUserController {
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
     }
 
-
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@RequestBody ListUser user, @PathVariable Integer id) {
+    public ResponseEntity<?> put(@RequestBody ListUser user, @PathVariable(value = "id") Integer id) {
         if (this.manager.isValid(user)) {
             ListUserResponse response = this.transformer.getListUser(this.manager.updateListUser(user, id).getId());
             return ResponseEntity
@@ -82,11 +81,10 @@ public class ListUserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ListUserResponse> delete(@PathVariable Integer id) {
-            ListUserResponse response = this.transformer.getListUser(id);
-            this.manager.deleteListUser(id);
-            return ResponseEntity.ok(response);
-
+    public ResponseEntity<ListUserResponse> delete(@PathVariable(value = "id") Integer id) {
+        ListUserResponse response = this.transformer.getListUser(id);
+        this.manager.deleteListUser(id);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping()

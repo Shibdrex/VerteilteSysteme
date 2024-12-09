@@ -10,6 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data transfer object of {@link TodoList}, adds HATEOAS-links.
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -25,5 +28,11 @@ public class TodoListResponse {
         this.favorite = list.getFavorite();
         this.links = model.getLinks().toList().stream()
                 .collect(Collectors.toMap(link -> link.getRel().value(), link -> link.getHref()));
+    }
+
+    public TodoListResponse(TodoList list) {
+        this.id = list.getId();
+        this.title = list.getTitle();
+        this.favorite = list.getFavorite();
     }
 }
