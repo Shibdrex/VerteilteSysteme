@@ -1,0 +1,24 @@
+
+<div class="container-fluid">
+    <div class="col-10">
+        <div class="row gx-2 gy-1 mt-3">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let item of getFilteredList()">
+                 <!--check if the current list is shown as a total-->
+                <ng-container *ngIf="this.currentId === item.id; else List">
+                    <app-list-view [item]="item" ></app-list-view>
+                </ng-container>
+
+                <ng-template #List>
+                    <a [routerLink]="['/list']" [queryParams]="{ id: item.id }" queryParamsHandling="merge" class="text-decoration-none d-flex p-2 ms-4">
+                         <app-list [title]="item.list.title"></app-list>
+                    </a>
+                </ng-template>
+            </div>
+
+                <!-- Create New List component -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex p-2 ms-4">
+                <app-create-new-list></app-create-new-list>
+            </div>
+        </div>
+    </div>
+</div>

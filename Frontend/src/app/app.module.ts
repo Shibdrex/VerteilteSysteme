@@ -10,6 +10,8 @@ import { ListComponent } from './list/list.component';
 import { ListViewComponent } from './list-view/list-view.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { NewListComponent } from './new-list/new-list.component';
+import { ViewAllListsComponent } from './view-all-lists/view-all-lists.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { NewListComponent } from './new-list/new-list.component';
     ListComponent,
     ListViewComponent,
     NavbarComponent,
-    NewListComponent
+    NewListComponent,
+    ViewAllListsComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
