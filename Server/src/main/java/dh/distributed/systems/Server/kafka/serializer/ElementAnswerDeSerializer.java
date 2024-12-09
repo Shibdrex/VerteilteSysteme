@@ -18,11 +18,11 @@ public class ElementAnswerDeSerializer implements Deserializer<ElementAnswer> {
             .findAndAddModules()
             .build();
 
-
     static {
-        mapper.coercionConfigFor(Enum.class)
+        mapper.coercionConfigFor(Enum.class) // if a num field is empty string replace with null
                 .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
     }
+
     @Override
     public ElementAnswer deserialize(String topic, byte[] data) {
         try {

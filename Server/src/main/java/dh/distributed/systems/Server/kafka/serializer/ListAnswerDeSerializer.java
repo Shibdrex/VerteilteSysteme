@@ -13,13 +13,13 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import dh.distributed.systems.Server.message.ListAnswer;
 
 public class ListAnswerDeSerializer implements Deserializer<ListAnswer> {
-    
+
     public static final ObjectMapper mapper = JsonMapper.builder()
             .findAndAddModules()
             .build();
 
     static {
-        mapper.coercionConfigFor(Enum.class)
+        mapper.coercionConfigFor(Enum.class) // if a num field is empty string replace with null
                 .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
     }
 

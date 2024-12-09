@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class represents the list-element entity.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
