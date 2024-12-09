@@ -8,6 +8,8 @@ import { WebSocketService } from '../httppost.service';
 })
 export class ListComponent {
 
+  lisde: any;
+
   private lists : any; //Variable for Lists
 
   private topic  = '/app/create-list'; //topic for connection with WebSocket
@@ -21,5 +23,6 @@ getLists(){//gets all lists from the DB by calling the post-user-service.service
     console.log(this.lists)//controll/debug log
     return this.lists
   }
+
 
 }

@@ -19,6 +19,7 @@ connect(): void {//creates a connection to the Websocket with the URL
     });
   }
 
+
   sendMessage(topic: string, message: any): void {//Sends new created lists via WebSocketconnection
     if (this.subject.closed) { 
       console.error("WebSocket connection is closed. Cannot send message.");

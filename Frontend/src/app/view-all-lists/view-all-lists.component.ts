@@ -1,6 +1,7 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
+import { WebSocketService } from '../httppost.service';
 
 @Component({
   selector: 'app-view-all-lists',
@@ -9,9 +10,16 @@ import { filter, Subscription } from 'rxjs';
 })
 export class ViewAllListsComponent implements OnInit{
 
+  private lists : any; //Variable for Lists
+
+  private topic  = '/app/create-list'; //topic for connection with WebSocket
+
   item: string = "Test Titel" //single list 
 
   finalLisde: Array<any> = [];
+
+
+  todo: any;
 
   currentId: number | null = null; //used in ngOnInit()
 
@@ -20,7 +28,7 @@ export class ViewAllListsComponent implements OnInit{
   
 
 
-  constructor(private router:Router){  }
+  constructor(private router:Router, private webSocket: WebSocketService){  }
 
 
   getFilteredList() {//checks if param fav is true returns all todo-lists which have favourite as true
@@ -39,8 +47,6 @@ export class ViewAllListsComponent implements OnInit{
     else if (fav === 'true') {
       this.finalLisde = this.lisde.filter(item => item.list.favorite === true);
     }
-  
-    console.log("Angezeigte Items: " + this.finalLisde)//controll/debug log
     return this.finalLisde;
   }
   
@@ -57,6 +63,12 @@ export class ViewAllListsComponent implements OnInit{
         console.log('Aktuelle ID:', this.currentId);
       });
 
+}
+
+getLists(){//gets all lists from the DB by calling the post-user-service.service
+  this.lists = this.webSocket.subscribeToTopic(this.topic)
+  console.log(this.lists)//controll/debug log
+  return this.lists
 }
 
 
