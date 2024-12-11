@@ -1,6 +1,6 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { filter, Subscription } from 'rxjs';
+import { filter, map, Observable, Subscription, tap } from 'rxjs';
 import { WebSocketService } from '../httppost.service';
 
 @Component({
@@ -10,9 +10,7 @@ import { WebSocketService } from '../httppost.service';
 })
 export class ViewAllListsComponent implements OnInit{
 
-  private lists : any; //Variable for Lists
-
-  private topic  = '/app/create-list'; //topic for connection with WebSocket
+  lists: any[] = [];
 
   item: string = "Test Titel" //single list 
 
@@ -42,10 +40,10 @@ export class ViewAllListsComponent implements OnInit{
   
 
     if (fav === 'false') {
-         this.finalLisde = [...this.lisde];//returns all lists if fav is false
+         this.finalLisde = [...this.lists];//returns all lists if fav is false
     } 
     else if (fav === 'true') {
-      this.finalLisde = this.lisde.filter(item => item.list.favorite === true);
+      this.finalLisde = this.lists.filter(item => item.list.favorite === true);
     }
     return this.finalLisde;
   }
@@ -54,22 +52,59 @@ export class ViewAllListsComponent implements OnInit{
   ngOnInit() {//gets the id of the currently shown list via URL with subscription
               //the subscription watches for changes in the URL, when change accures the URl part id gets read
     
-    this.routSubscription = this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))//watch changes from URLend
-      .subscribe(() => {
-        const id = this.route.snapshot.queryParamMap.get('id'); //get the current id part of URL
-        console.log(id)                   
-        this.currentId = id ? +id : null; //changes string variable to number
-        console.log('Aktuelle ID:', this.currentId);
-      });
+              this.getLists().subscribe({
+                next: (data) => {
+                  console.log('Empfangene Daten:', data);
+                  this.lists = data; // Speichere die Daten in das Array
+                },
+                error: (err) => {
+                  console.error('Fehler beim Empfangen der Daten:', err);
+                }
+              });
+            }
+    // this.routSubscription = this.router.events
+    //   .pipe(filter((event) => event instanceof NavigationEnd))//watch changes from URLend
+    //   .subscribe(() => {
+    //     const id = this.route.snapshot.queryParamMap.get('id'); //get the current id part of URL
+    //     console.log(id)                   
+    //     this.currentId = id ? +id : null; //changes string variable to number
+    //     console.log('Aktuelle ID:', this.currentId);
+    //   });
 
+
+
+getLists(): Observable<any[]> {
+  const topic = '/topic/list-answer';
+  const action = 'GET_ALL';
+  return this.webSocket.getReceivedMessages().pipe(
+    tap((data) => {
+      console.log("Test")
+      // Logge die ursprünglichen Daten vor der Transformation
+      console.log("Original empfangene Daten:", data);
+    }),
+    map((data: any[]) => {
+
+      if(!Array.isArray(data)){
+        console.log("No Array:  "+ data)
+      }
+      // Transformiere die empfangenen Daten
+      const transformedData = data.map((item) => ({
+        id: item.list.id,
+        title: item.list.title,
+        favorite: item.list.favorite,
+        user: item.list.user,
+        action: item.action,
+      }));
+      
+      // Logge die transformierten Daten
+      console.log("Transformierte Daten:", transformedData);
+      return transformedData;
+    })
+  );
 }
 
-getLists(){//gets all lists from the DB by calling the post-user-service.service
-  this.lists = this.webSocket.subscribeToTopic(this.topic)
-  console.log(this.lists)//controll/debug log
-  return this.lists
-}
+
+
 
 
 lisde = [ //example list

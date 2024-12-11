@@ -18,11 +18,11 @@ export class ListComponent {
 
 constructor(private webSocket: WebSocketService) {}
 
-getLists(){//gets all lists from the DB by calling the post-user-service.service
-    this.lists = this.webSocket.subscribeToTopic(this.topic)
-    console.log(this.lists)//controll/debug log
-    return this.lists
-  }
+// getLists(){//gets all lists from the DB by calling the post-user-service.service
+//     this.lists = this.webSocket.subscribeToTopic(this.topic)
+//     console.log(this.lists)//controll/debug log
+//     return this.lists
+//   }
 
 
 }
