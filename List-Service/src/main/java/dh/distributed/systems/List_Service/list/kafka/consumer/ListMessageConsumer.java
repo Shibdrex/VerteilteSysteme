@@ -49,42 +49,42 @@ public class ListMessageConsumer {
                 case "GET_ONE":
                     list = this.manager.getList(message.getListID());
                     response = new TodoListResponse(list);
-                    producer.sendMessage("todo-list-answer", new ListAnswer(list.getId(), response, null, true));
+                    producer.sendMessage("todo-list-answer", new ListAnswer(list.getId(), "GET_ONE", response, null, true));
                     break;
                 case "GET_ALL":
                     lists = this.manager.getAllLists();
                     responses = lists.stream().map(TodoListResponse::new).collect(Collectors.toList());
-                    producer.sendMessage("todo-list-answer", new ListAnswer(null, null, responses, true));
+                    producer.sendMessage("todo-list-answer", new ListAnswer(null, "GET_ALL", null, responses, true));
                     break;
                 case "GET_ALL_BY_USER":
                     lists = this.manager.getAllListsByUserID(message.getUserID());
                     responses = lists.stream().map(TodoListResponse::new).collect(Collectors.toList());
-                    producer.sendMessage("todo-list-answer", new ListAnswer(null, null, responses, true));
+                    producer.sendMessage("todo-list-answer", new ListAnswer(null, "GET_ALL_BY_USER", null, responses, true));
                     break;
                 case "CREATE":
                     list = this.manager.createList(message.getUserID(), message.getList());
                     response = new TodoListResponse(list);
-                    producer.sendMessage("todo-list-answer", new ListAnswer(list.getId(), response, null, true));
+                    producer.sendMessage("todo-list-answer", new ListAnswer(list.getId(), "CREATE", response, null, true));
                     break;
                 case "UPDATE":
                     list = this.manager.updateList(message.getList(), message.getListID());
                     response = new TodoListResponse(list);
-                    producer.sendMessage("todo-list-answer", new ListAnswer(list.getId(), response, null, true));
+                    producer.sendMessage("todo-list-answer", new ListAnswer(list.getId(), "UPDATE", response, null, true));
                     break;
                 case "DELETE":
                     this.manager.deleteList(message.getListID());
-                    producer.sendMessage("todo-list-answer", new ListAnswer(null, null, null, true));
+                    producer.sendMessage("todo-list-answer", new ListAnswer(null, "DELETE", null, null, true));
                     break;
                 case "DELETE_BY_USER":
                     this.manager.deleteAllByUser(message.getUserID());
-                    producer.sendMessage("todo-list-answer", new ListAnswer(null, null, null, true));
+                    producer.sendMessage("todo-list-answer", new ListAnswer(null, "DELETE_BY_USER", null, null, true));
                     break;
                 case "DELETE_ALL":
                     this.manager.deleteAll();
-                    producer.sendMessage("todo-list-answer", new ListAnswer(null, null, null, true));
+                    producer.sendMessage("todo-list-answer", new ListAnswer(null, "DELETE_ALL", null, null, true));
                     break;
                 default: // if no action was given or action is invalid, send message to server informing about this
-                    producer.sendMessage("todo-list-answer", new ListAnswer(null, null, null, false));
+                    producer.sendMessage("todo-list-answer", new ListAnswer(null, "NO_ACTION_MATCHED", null, null, false));
                     break;
             }
         } catch (Exception ex) {
