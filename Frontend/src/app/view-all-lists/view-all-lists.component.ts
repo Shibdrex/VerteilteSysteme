@@ -69,7 +69,7 @@ export class ViewAllListsComponent implements OnInit{
               return this.webSocket.getReceivedMessages().pipe(
                 tap((data) => {
                   console.log("Empfangene Nachricht:", data);
-            
+                  console.log("acrion.data: ", data.action)
                   // Überprüfe, ob die Nachricht eine CRUD-Operation ist
                   if (data.action === 'CREATE' || data.action === 'UPDATE' || data.action === 'DELETE') {
                     console.log("CRUD-Operation erkannt:", data.action);
@@ -81,6 +81,19 @@ export class ViewAllListsComponent implements OnInit{
                       destination: topic,
                     });
                   }
+                  if (data.action === "GET_ALL") {
+                    console.log("Daten empfangen:", data);  // Optional: Ausgabe der Daten zum Debuggen
+                
+                    // Angenommen, data enthält ein Array von Listen (z.B. data.lists)
+                    if (Array.isArray(data.lists)) {
+                        // Weise das Array den this.lists zu
+                        this.lists = data.lists;
+                
+                        console.log("Endliste:", this.lists);  // Zeige das gespeicherte Array
+                    } else {
+                        console.error("Die empfangenen Daten sind kein Array:", data.lists);
+                    }
+                }
                 }),
                 filter((data) => data.action === 'GET_ALL_RESPONSE'), // Filtere nur GET_ALL-Antworten
                 map((data: any[]) => {

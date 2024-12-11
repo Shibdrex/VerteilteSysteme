@@ -26,7 +26,7 @@ export class WebSocketService {
     this.messageReceiver = new Subject();  // Initialize receiver Subject
 
     this.stompClient.onConnect = (frame) => {
-      console.log('Connected to broker:'); //frame can be shown for debuging
+      console.log('Connected to broker:'); //frame can be shown for debugging
 
       // Subscribe to messagePublisher to send messages
       this.messagePublisher.subscribe({
@@ -45,8 +45,18 @@ export class WebSocketService {
 
       // Subscribe to a STOMP topic for receiving messages
       this.stompClient.subscribe('/topic/list-answer', (message) => {
-        console.log('Received message from STOMP topic:', message);
-        this.messageReceiver.next(message);  // Push the received message to messageReceiver
+        try {
+          console.log('Raw message received:', message);
+
+          // Parse the message body
+          const parsedBody = JSON.parse(message.body);
+          console.log('Parsed body:', parsedBody);
+
+          // Push the parsed body to messageReceiver
+          this.messageReceiver.next(parsedBody);
+        } catch (error) {
+          console.error('Error parsing message body:', error);
+        }
       });
     };
 
@@ -85,9 +95,6 @@ export class WebSocketService {
 
   // Method to receive messages
   getReceivedMessages() {
-    return this.messageReceiver.asObservable();  // Return the Observable for receiving messages
+    return this.messageReceiver.asObservable();  // Return the Observable for receiving parsed message bodies
   }
 }
-
-
-
