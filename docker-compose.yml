@@ -99,7 +99,9 @@ services:
     depends_on:
       - user-service
       - list-service
-      - kafka
+      - kafka_one
+      - kafka_two
+      - kafka_three
       - server
     ports:
       - "5000:5000"

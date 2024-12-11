@@ -82,20 +82,29 @@ public class ProcessedMessage {
             this.userId = listMessage.getUserID();
             this.action = listMessage.getAction();
             this.listId = listMessage.getListID();
-            this.title = listMessage.getList().getTitle();
-            this.favorite = listMessage.getList().getFavorite();
+
+            if(listMessage.getList() != null){
+                this.title = listMessage.getList().getTitle();
+                this.favorite = listMessage.getList().getFavorite();
+            }
+           
         }
         if (message instanceof ElementMessage elementMessage) {
             this.messageId = elementMessage.getMessageID();
             this.userId = elementMessage.getUserID();
             this.action = elementMessage.getAction();
             this.listId = elementMessage.getListID();
-            this.elementId = elementMessage.getElement().getId();
-            this.status = elementMessage.getElement().getStatus();
-            this.priority = elementMessage.getElement().getPriority();
-            this.tags = elementMessage.getElement().getTags();
-            this.dueDate = elementMessage.getElement().getDueDate();
-            this.name = elementMessage.getElement().getName();
+            
+            if(elementMessage.getElement() != null){
+                this.elementId = elementMessage.getElement().getId();
+                this.status = elementMessage.getElement().getStatus();
+                this.priority = elementMessage.getElement().getPriority();
+                this.tags = elementMessage.getElement().getTags();
+                this.dueDate = elementMessage.getElement().getDueDate();
+                this.name = elementMessage.getElement().getName();
+            }
+            
+           
         }
     }
 }

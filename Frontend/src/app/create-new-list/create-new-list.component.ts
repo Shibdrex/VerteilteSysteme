@@ -1,18 +1,13 @@
 
-import { Component } from '@angular/core';
-import {  WebSocketService } from '../httppost.service';
-
-
-
+import { Component, OnDestroy } from '@angular/core';
+import { WebSocketService } from '../httppost.service';
 
 @Component({
   selector: 'app-create-new-list',
   templateUrl: './create-new-list.component.html',
- styleUrl: './create-new-list.component.scss'
+  styleUrls: ['./create-new-list.component.scss']
 })
-export class CreateNewListComponent {
-
-  //default input for new created todo lists
+export class CreateNewListComponent implements OnDestroy {
   private input = `{ 
     "userID": 1,
     "action": "CREATE",
@@ -21,22 +16,28 @@ export class CreateNewListComponent {
       "favorite": false
     }
   }`;
-
-  private list = JSON.parse(this.input);
-  private readonly topic = '/app/create-list'; // define topic for WebSocket
+  private message = JSON.parse(this.input);
 
   constructor(private webSocketService: WebSocketService) {
-    this.webSocketService.connect(); //calls httppost.service to OPEN connection with WebSocket
+    // Listen for incoming messages
+    this.webSocketService.getReceivedMessages().subscribe({
+      next: (message) => this.handleIncomingMessage(message),
+      error: (err) => console.error('Error receiving WebSocket message:', err),
+    });
   }
 
   sendListToKafka(): void {
-    console.log('Sending list to Kafka via topic:', this.topic);//controll/dubug log
-    this.webSocketService.sendMessage(this.topic, this.list);
+    this.webSocketService.sendMessage(this.message);
+    console.log('List sent via WebSocket:', this.message);
+  }
+
+  handleIncomingMessage(message: any): void {
+    console.log('Message received from WebSocket:', message);
+    // Optionally, add custom logic to handle the message here
   }
 
   ngOnDestroy(): void {
-    this.webSocketService.closeConnection(); //calls httppost.service to CLOSE connection with Websocket
+    // No explicit connection closing required, STOMP handles reconnections
+    console.log('CreateNewListComponent destroyed.');
   }
 }
-
-
