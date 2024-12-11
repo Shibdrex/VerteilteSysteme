@@ -50,55 +50,55 @@ public class ElementMessageConsumer {
                     element = this.manager.getElement(message.getElementID());
                     response = new ListElementResponse(element);
                     producer.sendMessage("todo-element-answer",
-                            new ElementAnswer(element.getId(), response, null, true));
+                            new ElementAnswer(element.getId(), "GET_ONE", response, null, true));
                     break;
                 case "GET_ALL":
                     elements = this.manager.getAllElements();
                     responses = elements.stream().map(ListElementResponse::new).collect(Collectors.toList());
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, responses, true));
+                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, "GET_ALL", null, responses, true));
                     break;
                 case "GET_ALL_BY_USER":
                     elements = this.manager.getAllElementsByUserID(message.getUserID());
                     responses = elements.stream().map(ListElementResponse::new).collect(Collectors.toList());
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, responses, true));
+                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, "GET_ALL_BY_USER", null, responses, true));
                     break;
                 case "GET_ALL_BY_LIST":
                     elements = this.manager.getAllElementsByListID(message.getListID());
                     responses = elements.stream().map(ListElementResponse::new).collect(Collectors.toList());
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, responses, true));
+                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, "GET_ALL_BY_LIST", null, responses, true));
                     break;
                 case "CREATE":
                     element = this.manager.createElement(message.getUserID(), message.getListID(),
                             message.getElement());
                     response = new ListElementResponse(element);
                     producer.sendMessage("todo-element-answer",
-                            new ElementAnswer(element.getId(), response, null, true));
+                            new ElementAnswer(element.getId(), "CREATE", response, null, true));
                     break;
                 case "UPDATE":
                     element = this.manager.updateElement(message.getElement(), message.getElementID());
                     response = new ListElementResponse(element);
                     producer.sendMessage("todo-element-answer",
-                            new ElementAnswer(element.getId(), response, null, true));
+                            new ElementAnswer(element.getId(), "UPDATE", response, null, true));
                     break;
                 case "DELETE":
                     this.manager.deleteElement(message.getElementID());
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, null, true));
+                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, "DELETE", null, null, true));
                     break;
                 case "DELETE_BY_USER":
                     this.manager.deleteAllByUser(message.getUserID());
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, null, true));
+                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, "DELETE_BY_USER", null, null, true));
                     break;
                 case "DELETE_BY_LIST":
                     this.manager.deleteAllByList(message.getListID());
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, null, true));
+                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, "DELETE_BY_LIST", null, null, true));
                     break;
                 case "DELETE_ALL":
                     this.manager.deleteAll();
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, null, true));
+                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, "DELETE_ALL", null, null, true));
                     break;
                 default: // if no action was given or action is invalid, send message to server informing
                          // about this
-                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, null, null, false));
+                    producer.sendMessage("todo-element-answer", new ElementAnswer(null, "NO_ACTION_MATCHED", null, null, false));
                     break;
             }
         } catch (Exception ex) {

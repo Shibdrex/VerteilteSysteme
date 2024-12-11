@@ -82,29 +82,22 @@ public class ProcessedMessage {
             this.userId = listMessage.getUserID();
             this.action = listMessage.getAction();
             this.listId = listMessage.getListID();
-
-            if(listMessage.getList() != null){
-                this.title = listMessage.getList().getTitle();
-                this.favorite = listMessage.getList().getFavorite();
-            }
-           
+            if (listMessage.getList() == null) return; // Exit early if there is no list-object in the message
+            this.title = listMessage.getList().getTitle();
+            this.favorite = listMessage.getList().getFavorite();
         }
         if (message instanceof ElementMessage elementMessage) {
             this.messageId = elementMessage.getMessageID();
             this.userId = elementMessage.getUserID();
             this.action = elementMessage.getAction();
             this.listId = elementMessage.getListID();
-            
-            if(elementMessage.getElement() != null){
-                this.elementId = elementMessage.getElement().getId();
-                this.status = elementMessage.getElement().getStatus();
-                this.priority = elementMessage.getElement().getPriority();
-                this.tags = elementMessage.getElement().getTags();
-                this.dueDate = elementMessage.getElement().getDueDate();
-                this.name = elementMessage.getElement().getName();
-            }
-            
-           
+            if (elementMessage.getElement() == null) return; // Exit early if there is no element-object in the message
+            this.elementId = elementMessage.getElement().getId();
+            this.status = elementMessage.getElement().getStatus();
+            this.priority = elementMessage.getElement().getPriority();
+            this.tags = elementMessage.getElement().getTags();
+            this.dueDate = elementMessage.getElement().getDueDate();
+            this.name = elementMessage.getElement().getName();
         }
     }
 }
