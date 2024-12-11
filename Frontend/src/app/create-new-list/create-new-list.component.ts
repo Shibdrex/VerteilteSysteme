@@ -28,7 +28,7 @@ export class CreateNewListComponent implements OnDestroy {
 
   sendListToKafka(): void {
     this.webSocketService.sendMessage(this.message);
-    console.log('List sent via WebSocket:', this.message);
+    console.log('List sent via WebSocket:');
   }
 
   handleIncomingMessage(message: any): void {

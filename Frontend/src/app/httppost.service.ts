@@ -26,7 +26,7 @@ export class WebSocketService {
     this.messageReceiver = new Subject();  // Initialize receiver Subject
 
     this.stompClient.onConnect = (frame) => {
-      console.log('Connected to STOMP broker:', frame);
+      console.log('Connected to broker:'); //frame can be shown for debuging
 
       // Subscribe to messagePublisher to send messages
       this.messagePublisher.subscribe({
@@ -71,6 +71,18 @@ export class WebSocketService {
     this.messagePublisher.next(message);  // Publish message to the Subject
   }
 
+  sendlist(message: any): void {
+    if (this.stompClient.connected) {
+      this.stompClient.publish({
+        destination: '/app/list', // Ziel-Topic
+        body: JSON.stringify(message),
+      });
+      console.log('Nachricht gesendet:', message);
+    } else {
+      console.error('STOMP-Client ist nicht verbunden.');
+    }
+  }
+
   // Method to receive messages
   getReceivedMessages() {
     return this.messageReceiver.asObservable();  // Return the Observable for receiving messages
@@ -79,77 +91,3 @@ export class WebSocketService {
 
 
 
-//   connect(): void {
-//     this.subject.subscribe({
-//       next: () => console.log("Connected to WebSocket"),
-//       error: (err) => console.error("WebSocket error", err),
-//       complete: () => console.log("WebSocket connection closed.")
-//     });
-//   }
-
-//   sendMessage(topic: string, message: any): void {
-//     if (this.subject.closed) {
-//       console.error("WebSocket connection is closed. Cannot send message.");
-//       return;
-//     }
-
-//     const messagePayload = {
-//       topic: topic,
-//       message: message
-//     };
-
-//     this.publishMessage(messagePayload);
-//   }
-
-//   private publishMessage(messagePayload: any): void {
-//     const publishedMessage$ = new Observable<any>((observer) => {
-//       observer.next(messagePayload);
-//     }).pipe(publish());
-
-//     publishedMessage$.subscribe({
-//       next: (msg) => {
-//         this.subject.next(msg);
-//         console.log("Message sent:", msg);
-//       },
-//       error: (err) => console.error("Error sending message:", err),
-//       complete: () => console.log("Message published successfully.")
-//     });
-//   }
-
-//   closeConnection(): void {
-//     this.subject.complete();
-//     console.log('WebSocket connection closed.');
-//   }
-
-//   subscribeToTopic(topic: string, action: any): Observable<any> {
-//     if (this.subject.closed) {
-//       console.error('WebSocket connection is not established.', action);
-//       throw new Error('WebSocket connection is not established.');
-//     }
-    
-//     this.subject.next({
-//       destination: '/app/list',
-//       userID: 1,
-//       action: 'GET_ALL'
-//     });
-    
-//     return new Observable((observer) => {
-//       this.subject.subscribe({
-//         next: msg => {
-//           console.log("HAllo")
-//           if (msg?.topic === topic) {
-//             observer.next(msg.message);
-//           }
-//         },
-//         error: (err) => {
-//           console.error("WebSocket error:", err);
-//           observer.error(err);
-//         },
-//         complete: () => {
-//           console.log("WebSocket connection complete");
-//           observer.complete();
-//         }
-//       });
-//     });
-//   }
-// }

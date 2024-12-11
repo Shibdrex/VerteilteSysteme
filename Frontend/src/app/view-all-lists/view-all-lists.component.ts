@@ -52,57 +52,58 @@ export class ViewAllListsComponent implements OnInit{
   ngOnInit() {//gets the id of the currently shown list via URL with subscription
               //the subscription watches for changes in the URL, when change accures the URl part id gets read
     
-              this.getLists().subscribe({
-                next: (data) => {
-                  console.log('Empfangene Daten:', data);
-                  this.lists = data; // Speichere die Daten in das Array
-                },
-                error: (err) => {
-                  console.error('Fehler beim Empfangen der Daten:', err);
-                }
+              this.getLists().subscribe((updatedLists) => {
+                console.log('Aktualisierte Listen:', updatedLists);
+                this.lists = updatedLists;
               });
             }
-    // this.routSubscription = this.router.events
-    //   .pipe(filter((event) => event instanceof NavigationEnd))//watch changes from URLend
-    //   .subscribe(() => {
-    //     const id = this.route.snapshot.queryParamMap.get('id'); //get the current id part of URL
-    //     console.log(id)                   
-    //     this.currentId = id ? +id : null; //changes string variable to number
-    //     console.log('Aktuelle ID:', this.currentId);
-    //   });
+    
 
 
-
-getLists(): Observable<any[]> {
-  const topic = '/topic/list-answer';
-  const action = 'GET_ALL';
-  return this.webSocket.getReceivedMessages().pipe(
-    tap((data) => {
-      console.log("Test")
-      // Logge die ursprünglichen Daten vor der Transformation
-      console.log("Original empfangene Daten:", data);
-    }),
-    map((data: any[]) => {
-
-      if(!Array.isArray(data)){
-        console.log("No Array:  "+ data)
-      }
-      // Transformiere die empfangenen Daten
-      const transformedData = data.map((item) => ({
-        id: item.list.id,
-        title: item.list.title,
-        favorite: item.list.favorite,
-        user: item.list.user,
-        action: item.action,
-      }));
-      
-      // Logge die transformierten Daten
-      console.log("Transformierte Daten:", transformedData);
-      return transformedData;
-    })
-  );
-}
-
+            getLists(): Observable<any[]> {
+              const topic = '/topic/list-answer'; // Topic für die CRUD-Antwort
+              const action = 'GET_ALL'; // Aktion für die GET-Anfrage
+            
+              console.log("Test")
+              // Empfange Nachrichten von der WebSocket-Verbindung
+              return this.webSocket.getReceivedMessages().pipe(
+                tap((data) => {
+                  console.log("Empfangene Nachricht:", data);
+            
+                  // Überprüfe, ob die Nachricht eine CRUD-Operation ist
+                  if (data.action === 'CREATE' || data.action === 'UPDATE' || data.action === 'DELETE') {
+                    console.log("CRUD-Operation erkannt:", data.action);
+            
+                    // Sende eine GET-Anfrage über die WebSocket-Verbindung
+                    console.log("Hallo was geht")
+                    this.webSocket.sendlist({
+                      action: 'GET_ALL',
+                      destination: topic,
+                    });
+                  }
+                }),
+                filter((data) => data.action === 'GET_ALL_RESPONSE'), // Filtere nur GET_ALL-Antworten
+                map((data: any[]) => {
+                  // Transformiere die empfangenen Daten
+                  if (!Array.isArray(data)) {
+                    console.error("Empfangene Daten sind kein Array:", data);
+                    return [];
+                  }
+            
+                  const transformedData = data.map((item) => ({
+                    id: item.list.id,
+                    title: item.list.title,
+                    favorite: item.list.favorite,
+                    user: item.list.user,
+                    action: item.action,
+                  }));
+            
+                  console.log("Transformierte Daten:", transformedData);
+                  return transformedData;
+                })
+              );
+            }
+            
 
 
 
