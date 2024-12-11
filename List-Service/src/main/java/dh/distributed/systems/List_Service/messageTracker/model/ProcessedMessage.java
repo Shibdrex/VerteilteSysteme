@@ -82,6 +82,7 @@ public class ProcessedMessage {
             this.userId = listMessage.getUserID();
             this.action = listMessage.getAction();
             this.listId = listMessage.getListID();
+            if (listMessage.getList() == null) return; // Exit early if there is no list-object in the message
             this.title = listMessage.getList().getTitle();
             this.favorite = listMessage.getList().getFavorite();
         }
@@ -90,6 +91,7 @@ public class ProcessedMessage {
             this.userId = elementMessage.getUserID();
             this.action = elementMessage.getAction();
             this.listId = elementMessage.getListID();
+            if (elementMessage.getElement() == null) return; // Exit early if there is no element-object in the message
             this.elementId = elementMessage.getElement().getId();
             this.status = elementMessage.getElement().getStatus();
             this.priority = elementMessage.getElement().getPriority();
