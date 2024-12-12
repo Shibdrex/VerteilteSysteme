@@ -60,6 +60,9 @@ services:
     image: server:1.0.0
     ports:
       - "8080"
+    environment:
+      - SPRING_REDIS_HOST=sessionRedis
+      - SPRING_REDIS_PORT=7000
     env_file:
       - .env
     restart: unless-stopped
@@ -90,6 +93,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+
+
+  sessionRedis:
+    image: redis:latest
+    ports:
+      - "7000:6379"
+    restart: unless-stopped
 
 
   load-balancer:
