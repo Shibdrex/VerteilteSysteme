@@ -53,6 +53,26 @@ services:
           memory: 256M
 
 
+  frontend-service:
+    build: 
+      context: ./
+      dockerfile: Frontend/dockerfile
+    image: frontend-service:1.0.0
+    ports:
+      - "5500:4200"
+    restart: unless-stopped
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '2'
+          memory: 512M
+        reservations:
+          cpus: '1'
+          memory: 256M
+
+
   server:
     build:
       context: ./
