@@ -1,0 +1,28 @@
+.sidebar {
+    height: 100vh;
+    background-color: #a3b9cf;
+    width: 150px;
+  }
+ 
+  .nav-link {
+    background-color: #e9ecef;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    text-decoration: none;
+  }
+
+  .favLists{
+    margin-top: 5px;
+    background-color: #e5eaf0;
+    width: 150px;
+    height: 50px;
+  }
+
+  .favLink{
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
