@@ -37,6 +37,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/${DB_NAME}
     env_file:
       - .env
+    hostname: "{{.Service.Name}-{.Task.Slot}}"
     depends_on:
       mariadb:
         condition: service_healthy
@@ -85,6 +86,7 @@ services:
       - SPRING_REDIS_PORT=7000
     env_file:
       - .env
+    hostname: "{{.Service.Name}-{.Task.Slot}}"
     restart: unless-stopped
     deploy:
       mode: replicated

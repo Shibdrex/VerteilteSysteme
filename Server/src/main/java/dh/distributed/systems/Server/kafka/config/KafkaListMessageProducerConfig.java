@@ -1,5 +1,7 @@
 package dh.distributed.systems.Server.kafka.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,19 +31,24 @@ public class KafkaListMessageProducerConfig {
     private ListMessageSerializer listMessageSerializer;
 
     @Bean
-    public ProducerFactory<String, ListMessage> listProducerFactory() {
+    public ProducerFactory<String, ListMessage> listProducerFactory() throws UnknownHostException {
         Map<String, Object> configProps = new HashMap<>();
+        String hostname = InetAddress.getLocalHost().getHostName();
+        String transactionalId = transactionIdPrefix + "-" + hostname + "-list";
+
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
-        configProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionIdPrefix + "-list");
+        configProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionalId);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, listMessageSerializer.getClass());
         return new DefaultKafkaProducerFactory<>(configProps, new StringSerializer(), listMessageSerializer);
     }
 
     @Bean
-    public KafkaTemplate<String, ListMessage> kafkaListTemplate() {
+    public KafkaTemplate<String, ListMessage> kafkaListTemplate() throws UnknownHostException {
         KafkaTemplate<String, ListMessage> template = new KafkaTemplate<>(listProducerFactory());
-        template.setTransactionIdPrefix(transactionIdPrefix);
+        String hostname = InetAddress.getLocalHost().getHostName();
+        String transactionalIdPrefixWithHostname = transactionIdPrefix + "-" + hostname;
+        template.setTransactionIdPrefix(transactionalIdPrefixWithHostname);
         return template;
     }
 }
