@@ -1,0 +1,32 @@
+{
+    "ListElement": {
+        "ElementMessage": {
+            "userID": "Integer",
+            "listID": "Integer",
+            "elementID": "Integer",
+            "action": "String [CREATE, UPDATE, DELETE, DELETE_BY_USER, DELETE_BY_LIST]",
+            "element": {
+                "id": "Integer <Generated>",
+                "status": "Boolean",
+                "tags": "Set<String> [Must decide on tags]",
+                "dueDate": "Date",
+                "name": "Varchar",
+                "user": "ListUser <Set during creation with userID",
+                "list": "TodoList <Set during creation with listID"
+            }
+        }
+    },
+    "List": {
+        "ListMessage": {
+            "userID": "Integer",
+            "listID": "Integer",
+            "action": "String [CREATE, UPDATE, DELETE, DELETE_BY_USER]",
+            "list": {
+                "id": "Integer <Generated>",
+                "title": "Varchar",
+                "favorite": "Boolean",
+                "user": "ListUser <Set during creation with userID"
+            }
+        }
+    }
+}

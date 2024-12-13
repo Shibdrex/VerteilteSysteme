@@ -5,7 +5,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.containers.RabbitMQContainer;
+// import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
@@ -23,10 +23,10 @@ class TestcontainersConfiguration {
 		return new MariaDBContainer<>(DockerImageName.parse("mariadb:latest"));
 	}
 
-	@Bean
-	@ServiceConnection
-	RabbitMQContainer rabbitContainer() {
-		return new RabbitMQContainer(DockerImageName.parse("rabbitmq:latest"));
-	}
+	// @Bean
+	// @ServiceConnection
+	// RabbitMQContainer rabbitContainer() {
+	// 	return new RabbitMQContainer(DockerImageName.parse("rabbitmq:latest"));
+	// }
 
 }
