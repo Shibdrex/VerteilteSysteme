@@ -1,4 +1,3 @@
-
 import { Component, OnDestroy } from '@angular/core';
 import { WebSocketService } from '../httppost.service';
 
@@ -8,7 +7,7 @@ import { WebSocketService } from '../httppost.service';
   styleUrls: ['./create-new-list.component.scss']
 })
 export class CreateNewListComponent implements OnDestroy {
-  private input = `{ 
+  private defaultInput = `{ 
     "userID": 1,
     "action": "CREATE",
     "list": {
@@ -16,28 +15,51 @@ export class CreateNewListComponent implements OnDestroy {
       "favorite": false
     }
   }`;
-  private message = JSON.parse(this.input);
+  private message = JSON.parse(this.defaultInput);
 
   constructor(private webSocketService: WebSocketService) {
-    // Listen for incoming messages
-    this.webSocketService.getReceivedMessages().subscribe({
-      next: (message) => this.handleIncomingMessage(message),
-      error: (err) => console.error('Error receiving WebSocket message:', err),
-    });
-  }
+  console.log('CreateNewListComponent: Warte auf eingehende Nachrichten...');
+  
+  // Listen for incoming messages
+  this.webSocketService.getReceivedMessages().subscribe({
+    next: (message) => {
+      console.log('Nachricht empfangen:', message);
+      this.handleIncomingMessage(message);
+    },
+    error: (err) => {
+      console.error('Fehler beim Empfang von WebSocket-Nachrichten:', err);
+      // Zusätzliche Fehlerbehandlung oder Maßnahmen, falls erforderlich
+    },
+    complete: () => {
+      console.log('WebSocket-Stream abgeschlossen');
+    }
+  });
+}
 
+  // Sende eine neue Liste via WebSocket
   sendListToKafka(): void {
-    this.webSocketService.sendMessage(this.message);
-    console.log('List sent via WebSocket:');
+    const createMessage = {
+      userID: this.message.userID,
+      action: 'CREATE',
+      list: this.message.list,
+    };
+
+    this.webSocketService.sendlist(createMessage);
+    console.log('Liste über WebSocket gesendet:', createMessage);
   }
 
-  handleIncomingMessage(message: any): void {
-    console.log('Message received from WebSocket:', message);
-    // Optionally, add custom logic to handle the message here
+  // Eingehende Nachrichten behandeln
+  private handleIncomingMessage(message: any): void {
+    console.log('Nachricht von WebSocket empfangen:', message);
+
+    // Verarbeite CREATE-spezifische Antworten (falls nötig)
+    if (message.action === 'CREATE_RESPONSE') {
+      console.log('Bestätigung für CREATE erhalten:', message);
+      // Optional: Benachrichtigung, UI-Update oder weitere Logik
+    }
   }
 
   ngOnDestroy(): void {
-    // No explicit connection closing required, STOMP handles reconnections
-    console.log('CreateNewListComponent destroyed.');
+    console.log('CreateNewListComponent zerstört.');
   }
 }

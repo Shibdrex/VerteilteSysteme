@@ -1,28 +1,58 @@
-import { Component, Input } from '@angular/core';
-import { WebSocketService } from '../httppost.service'; 
+import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { WebSocketService } from '../httppost.service';
+import { Subscription } from 'rxjs';
 
 @Component({
- selector: 'app-list',
- templateUrl: './list.component.html',
- styleUrl: './list.component.scss'
+  selector: 'app-list',
+  templateUrl: './list.component.html',
+  styleUrls: ['./list.component.scss']
 })
-export class ListComponent {
+export class ListComponent implements OnChanges, OnInit {
+  @Input() title?: string;
+  @Input() id?: number;  // Optionaler Input für ID
+  urlId?: number;        // ID aus der URL
 
-  lisde: any;
+  private routeSubscription!: Subscription;
 
-  private lists : any; //Variable for Lists
+  constructor(private route: ActivatedRoute, private webSocketService: WebSocketService) {}
 
-  private topic  = '/app/create-list'; //topic for connection with WebSocket
+  ngOnInit(): void {
+    this.routeSubscription = this.route.queryParamMap.subscribe(params => {
+      const idParam = params.get('id'); 
+      if (idParam) {
+        this.urlId = +idParam;
+        console.log('Aktualisierte ID aus den Query-Parametern:', this.urlId);
 
-  @Input() title = "title";
+        this.webSocketService.sendMessage({
+          action: 'GET_ONE',
+          id: this.urlId,
+        });
+      } else {
+        console.warn('Keine ID in den Query-Parametern gefunden.');
+      }
+    });
+  }
 
-constructor(private webSocket: WebSocketService) {}
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['id']) {
+      const currentValue = changes['id'].currentValue;
 
-// getLists(){//gets all lists from the DB by calling the post-user-service.service
-//     this.lists = this.webSocket.subscribeToTopic(this.topic)
-//     console.log(this.lists)//controll/debug log
-//     return this.lists
-//   }
+      if (this.urlId === currentValue) {
+        console.log('URL-ID und Eingabe-ID stimmen überein');
+        if (this.urlId !== undefined) {
+          this.webSocketService.sendMessage({
+            action: 'GET_ONE',
+            id: this.urlId,
+          });
+        }
+      }
+    }
+  }
 
-
+  ngOnDestroy(): void {
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
+  }
 }

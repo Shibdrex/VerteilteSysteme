@@ -75,7 +75,6 @@ export class ViewAllListsComponent implements OnInit{
                     console.log("CRUD-Operation erkannt:", data.action);
             
                     // Sende eine GET-Anfrage über die WebSocket-Verbindung
-                    console.log("Hallo was geht")
                     this.webSocket.sendlist({
                       action: 'GET_ALL',
                       destination: topic,

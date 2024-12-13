@@ -9,7 +9,7 @@
                 </ng-container>
                 <ng-template #List>
                     <a [routerLink]="['/list']" [queryParams]="{ id: item.id }" queryParamsHandling="merge" class="text-decoration-none d-flex p-2 ms-4">
-                         <app-list [title]="item.title"></app-list>
+                         <app-list [title]="item.title" [id]="item.id"></app-list>
                     </a>
                 </ng-template>
             </div>
