@@ -1,7 +1,5 @@
-import { Component, Input, OnChanges, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { WebSocketService } from '../httppost.service';
-import { Subscription } from 'rxjs';
+import { Component, Input} from '@angular/core';
+
 
 @Component({
   selector: 'app-list',
@@ -10,6 +8,6 @@ import { Subscription } from 'rxjs';
 })
 export class ListComponent  {
   @Input() title?: string;
-  @Input() id?: number;       // Eingabe-ID
+  @Input() id?: number;      
   
 }

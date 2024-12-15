@@ -16,7 +16,7 @@ export class ViewAllListsComponent implements OnInit{
 
   currentId: number = 0;
 
-  finalLisde: Array<any> = [];
+  finalLists: Array<any> = [];
 
   todo: any;
 
@@ -38,7 +38,6 @@ export class ViewAllListsComponent implements OnInit{
                     //if fav is false returns all
    
     let fav = this.route.snapshot.queryParamMap.get('fav');
-    console.log(fav)
 
     if( fav === null){//default value for fav if fav doesn't appear in URL
       fav = "false"
@@ -46,12 +45,13 @@ export class ViewAllListsComponent implements OnInit{
   
 
     if (fav === 'false') {
-         this.finalLisde = [...this.lists];//returns all lists if fav is false
+         this.finalLists = [...this.lists];//returns all lists if fav is false
+         
     } 
     else if (fav === 'true') {
-      this.finalLisde = this.lists.filter(item => item.list.favorite === true);
+      this.finalLists = this.lists.filter(item => item.favorite === true);
     }
-    return this.finalLisde;
+    return this.finalLists;
   }
   
 

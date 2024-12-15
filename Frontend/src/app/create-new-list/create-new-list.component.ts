@@ -7,6 +7,8 @@ import { WebSocketService } from '../httppost.service';
   styleUrls: ['./create-new-list.component.scss']
 })
 export class CreateNewListComponent implements OnDestroy {
+
+
   private defaultInput = `{ 
     "userID": 1,
     "action": "CREATE",
@@ -15,29 +17,29 @@ export class CreateNewListComponent implements OnDestroy {
       "favorite": false
     }
   }`;
+
   private message = JSON.parse(this.defaultInput);
 
   constructor(private webSocketService: WebSocketService) {
-  console.log('CreateNewListComponent: Warte auf eingehende Nachrichten...');
+
   
   // Listen for incoming messages
   this.webSocketService.getReceivedMessages().subscribe({
     next: (message) => {
-      console.log('Nachricht empfangen:', message);
+      console.log('Message retrieved:', message);
       this.handleIncomingMessage(message);
     },
     error: (err) => {
-      console.error('Fehler beim Empfang von WebSocket-Nachrichten:', err);
-      // Zusätzliche Fehlerbehandlung oder Maßnahmen, falls erforderlich
+      console.error('Error while receiving message', err);
     },
     complete: () => {
-      console.log('WebSocket-Stream abgeschlossen');
+      console.log('WebSocket-Stream done');
     }
   });
 }
 
-  // Sende eine neue Liste via WebSocket
-  sendListToKafka(): void {
+  
+  sendListToWebsocket(): void {//further handelt in WebSocketService
     const createMessage = {
       userID: this.message.userID,
       action: 'CREATE',
@@ -48,18 +50,17 @@ export class CreateNewListComponent implements OnDestroy {
     console.log('Liste über WebSocket gesendet:', createMessage);
   }
 
-  // Eingehende Nachrichten behandeln
+  
   private handleIncomingMessage(message: any): void {
-    console.log('Nachricht von WebSocket empfangen:', message);
+    console.log('retrieved message from WebSocket Service:', message);
 
-    // Verarbeite CREATE-spezifische Antworten (falls nötig)
+    
     if (message.action === 'CREATE_RESPONSE') {
-      console.log('Bestätigung für CREATE erhalten:', message);
-      // Optional: Benachrichtigung, UI-Update oder weitere Logik
+      console.log(':', message);
     }
   }
 
   ngOnDestroy(): void {
-    console.log('CreateNewListComponent zerstört.');
+    console.log('CreateNewListComponent killed.');
   }
 }

@@ -17,6 +17,7 @@ export class ListViewComponent {
   urlId?: number;             // ID aus der URL
   item: any = null;           // Speichert das empfangene Item
   todos: any = null;
+  idParam: any;
   private routeSubscription!: Subscription;
   private messageSubscription!: Subscription;
 
@@ -26,13 +27,12 @@ export class ListViewComponent {
   ) {}
 
   ngOnInit(): void {
-    // Abonniere die URL-Parameter
+    // subscribe to url to get current list id
     this.routeSubscription = this.route.queryParamMap.subscribe((params) => {
-      const idParam = params.get('id');
-      if (idParam) {
-        this.urlId = +idParam;
-        console.log('ID aus URL:', this.urlId);
-        this.requestItem(this.urlId); // Anfrage senden
+      this.idParam = params.get('id');
+      if (this.idParam) {
+        this.urlId = +this.idParam;
+        this.requestItem(this.urlId); 
       }
     });
 
@@ -90,20 +90,66 @@ export class ListViewComponent {
   }
 
   Add(){
+    // const updateList = {
+    //   listID: this.item.userID,
+    //   action: 'UPDATE',
+    //   userID: 1
+    // };
 
+    // const addElement ={
+    //     userID: 1,
+    //     listID: this.item.userID,
+    //     action: 'CREATE'
+    //     element:
+    // }
+      
+    //     "element": {
+    //         "id": "Integer <Generated>",
+    //         "status": "Boolean",
+    //         "tags": "Set<String> [Must decide on tags]",
+    //         "dueDate": "Date",
+    //         "name": "Varchar",
+    //         "user": "ListUser <Set during creation with userID",
+    //         "list": "TodoList <Set during creation with listID"
+    //     }
+    
+
+    // this.webSocketService.sendMessageToList(updateList);
   }
   
   Remove(){
-   console.log(this.item)
+    const deleteList = {
+        listID: this.idParam,
+        action: 'DELETE',
+        userID: 1
+      };
+    this.webSocketService.sendMessageToList(deleteList);
+  }
+
+
+  ChangeFav() {//change the favourite state
+    let fav = false;
   
+    if (this.item?.favorite === true) {
+      fav = false; 
+    } else {
+      fav = true; 
+    }
+  
+    const change = {
+        userID: 1, 
+        listID: this.idParam, 
+        action: 'UPDATE', 
+        list: {
+          favorite: fav, 
+          title: this.item?.title || '', 
+        },
+      }
+  
+    this.webSocketService.sendMessageToList(change);
   }
+  
 
-  ChangeNotFav(){
-
-  }
-
-  ChangeFav(){
-
-  }
 
 }
+
