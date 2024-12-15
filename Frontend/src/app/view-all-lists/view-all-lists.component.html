@@ -4,8 +4,8 @@
         <div class="row gx-2 gy-1 mt-3">
             <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let item of lists">
                  <!--check if the current list is shown as a total-->
-                <ng-container *ngIf="this.currentId === item.id; else List">
-                    <app-list-view [item]="item" ></app-list-view>
+                <ng-container *ngIf="getCurrentId() === item.id; else List">
+                    <app-list-view ></app-list-view>
                 </ng-container>
                 <ng-template #List>
                     <a [routerLink]="['/list']" [queryParams]="{ id: item.id }" queryParamsHandling="merge" class="text-decoration-none d-flex p-2 ms-4">

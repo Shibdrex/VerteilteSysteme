@@ -14,11 +14,14 @@
         </ng-template>
        
     <br></h1>
+    <ng-container *ngIf="todos === null; else NotNull">
+    </ng-container>
 
-    <div *ngFor="let todo of item.todos">
+    <ng-template #NotNull>
+    <div *ngFor="let todo of todos">
         <ng-container *ngIf="todo.isChecked; else NotCheckt"> 
             <input type="checkbox" [(ngModel)]="todo.isChecked" id="To-Do" name="To-Do" value="To-Do">
-        <label for="To-Do" id="To-Do">{{todo.name}}</label><br>
+        <label for="To-Do" id="To-Do">{{todos.name}}</label><br>
         </ng-container>
         
         <ng-template #NotCheckt>
@@ -26,6 +29,8 @@
             <label for="To-Do" id="To-Do">{{todo.name}}</label><br> 
         </ng-template>
     </div>
+</ng-template>
+    <button (click)="Add()" type="button" class="btn-secondary">Add</button>
 
 
     <button (click)=Remove() type="button" class="btn btn-danger">Entfernen</button>

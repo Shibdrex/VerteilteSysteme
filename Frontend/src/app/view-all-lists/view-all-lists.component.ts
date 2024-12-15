@@ -14,19 +14,24 @@ export class ViewAllListsComponent implements OnInit{
 
   item: string = "Test Titel" //single list 
 
+  currentId: number = 0;
+
   finalLisde: Array<any> = [];
 
-
   todo: any;
-
-  currentId: number | null = null; //used in ngOnInit()
 
   private route = inject(ActivatedRoute); //
   routSubscription!: Subscription;
   
 
 
-  constructor(private router:Router, private webSocket: WebSocketService){  }
+  constructor( private webSocket: WebSocketService){  }
+
+
+  getCurrentId(){
+
+     return this.currentId = Number(this.route.snapshot.queryParamMap.get('id'));
+  }
 
 
   getFilteredList() {//checks if param fav is true returns all todo-lists which have favourite as true
@@ -63,8 +68,6 @@ export class ViewAllListsComponent implements OnInit{
 
             getLists(): Observable<any[]> {
               const topic = '/topic/list-answer'; // Topic für die CRUD-Antwort
-              const action = 'GET_ALL'; // Aktion für die GET-Anfrage
-            
               console.log("Test")
               // Empfange Nachrichten von der WebSocket-Verbindung
               return this.webSocket.getReceivedMessages().pipe(
