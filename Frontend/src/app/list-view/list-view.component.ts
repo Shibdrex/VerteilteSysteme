@@ -17,7 +17,8 @@ export class ListViewComponent {
   urlId?: number;             // ID aus der URL
   item: any = null;           // Speichert das empfangene Item
   todos: any = null;
-  idParam: any;
+  idParam: any;               //Params from URL
+  access: boolean = false;                //access to edeting mode for title
   private routeSubscription!: Subscription;
   private messageSubscription!: Subscription;
 
@@ -99,8 +100,11 @@ export class ListViewComponent {
     // const addElement ={
     //     userID: 1,
     //     listID: this.item.userID,
-    //     action: 'CREATE'
-    //     element:
+    //     action: 'CREATE',
+    //     element: {
+    //         name: "",
+    //         status: false,
+    //     }
     // }
       
     //     "element": {
@@ -148,8 +152,34 @@ export class ListViewComponent {
   
     this.webSocketService.sendMessageToList(change);
   }
+
+  UpdateTitle(){
+
+    const newTitle = {
+      userID: 1, 
+      listID: this.idParam, 
+      action: 'UPDATE', 
+      list: {
+        favorite: this.item.favorite, 
+        title: this.item.title, 
+      },
+    }
+
+  this.webSocketService.sendMessageToList(newTitle);
+
+    this.access = false //resets edeting mode and switches to normal view
+    return this.access
+
+  }
   
+  
+  EnableEditing(){//enables edeting mode for the title
+    this.access = true
+
+    return this.access 
+  }
 
 
+ 
 }
 
