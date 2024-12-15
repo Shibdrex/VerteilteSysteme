@@ -121,7 +121,7 @@ export class ListViewComponent {
     // this.webSocketService.sendMessageToList(updateList);
   }
   
-  Remove(){
+  Remove(){//delets list from DB
     const deleteList = {
         listID: this.idParam,
         action: 'DELETE',
