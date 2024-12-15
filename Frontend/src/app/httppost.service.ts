@@ -1,20 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Client } from '@stomp/stompjs';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WebSocketService {
-  private subject: WebSocketSubject<any>;
   private stompClient: Client;
-  private messagePublisher: Subject<any>;
-  private messageReceiver: Subject<any>;  // Wir erstellen ein Subject für die Nachrichten
+  private messageReceiver: Subject<any>; // Receiver for incoming messages
+  private elementReceiver: Subject<any>; // Receiver for specific element messages
 
   constructor() {
-    this.subject = webSocket('ws://localhost:5000/server');
-
+    
     this.stompClient = new Client({
       brokerURL: 'ws://localhost:5000/server',
       reconnectDelay: 5000,
@@ -22,104 +19,75 @@ export class WebSocketService {
       heartbeatOutgoing: 4000,
     });
 
-    this.messagePublisher = new Subject();
-    this.messageReceiver = new Subject<any>();  // Initialisiere das messageReceiver Subject
+    this.messageReceiver = new Subject<any>();
+    this.elementReceiver = new Subject<any>();
 
-    this.stompClient.onConnect = (frame) => {
-      console.log('Connected to broker:'); //frame for debugging
+    this.stompClient.onConnect = () => {
+      console.log('Connected to broker');
 
-      // Subscribe to the messagePublisher to send messages
-      this.messagePublisher.subscribe({
-        next: (message) => {
-          if (this.stompClient.connected) {
-            this.stompClient.publish({
-              destination: '/app/list', // Ziel-Topic
-              body: JSON.stringify(message),
-            });
-            console.log('Message sent:', message);
-          } else {
-            console.error('STOMP client not connected.');
-          }
-        }
-      });
-
-      // Subscribe to a STOMP topic for receiving messages
+      // Subscribe to message topics
       this.stompClient.subscribe('/topic/list-answer', (message) => {
-        try {
-          console.log('Raw message received:', message);
-          const parsedBody = JSON.parse(message.body);
-          console.log('Parsed body:', parsedBody);
-          // Hier pushen wir die empfangenen Daten ins messageReceiver
-          this.messageReceiver.next(parsedBody);
-        } catch (error) {
-          console.error('Error parsing message body:', error);
-        }
+        const parsed = this.parseMessage(message);
+        if (parsed) this.messageReceiver.next(parsed);
       });
 
-      // Zum weiteren Debugging
-      this.stompClient.subscribe('/topic/element-answer', (message) => {
-        try {
-          console.log('Raw message received from element-answer:', message);
-          const parsedBody = JSON.parse(message.body);
-          console.log('Parsed body from element-answer:', parsedBody);
-          this.messageReceiver.next(parsedBody); // Empfange auch Nachrichten für element-answer
-        } catch (error) {
-          console.error('Error parsing message body from element-answer:', error);
-        }
+      this.stompClient.subscribe("/topic/element-answer", (message) => {
+        const parsed = this.parseMessage(message);
+        if (parsed) this.elementReceiver.next(parsed);
       });
-    };
-
-    this.stompClient.onWebSocketClose = () => {
-      console.log('WebSocket connection closed.');
-    };
-
-    this.stompClient.onWebSocketError = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    this.stompClient.onStompError = (frame) => {
-      console.error('STOMP error:', frame.headers['message']);
-      console.error('Details:', frame.body);
     };
 
     this.stompClient.activate();
   }
 
-  // Methode zum Empfangen von Nachrichten
+  // General utility to parse STOMP messages
+  private parseMessage(message: any): any | null {
+    try {
+      return JSON.parse(message.body);
+    } catch (error) {
+      console.error('Error parsing message:', error);
+      return null;
+    }
+  }
+
+  // Observable for general messages
   getReceivedMessages() {
-    return this.messageReceiver.asObservable();  // Wir geben das Observable des Subjects zurück
+    return this.messageReceiver.asObservable();
   }
 
-  sendMessage(message: any) {
-    this.messagePublisher.next(message);  // Publizieren von Nachrichten zum Senden
+  // Observable for element-specific messages
+  getElementMessages() {
+    return this.elementReceiver.asObservable();
   }
 
-  sendlist(message: any): void {
+  // Generalized message-sending method
+  sendMessageToTopic(topic: string, message: any): void {
     if (this.stompClient.connected) {
       this.stompClient.publish({
-        destination: '/app/list', // Ziel-Topic
+        destination: topic,
         body: JSON.stringify(message),
       });
-      console.log('Message sent:', message);
+      console.log(`Message sent to ${topic}:`, message);
     } else {
       console.error('STOMP client not connected.');
     }
+  }
+
+  // Specific methods for sending to predefined topics
+  sendMessageToList(message: any): void {
+    this.sendMessageToTopic('/app/list', message);
+  }
+
+  sendMessageToElement(message: any): void {
+    console.log("Message is send from /app/element ");
+    this.sendMessageToTopic('/app/element', message);
   }
 
   sendGetOneRequest(elementId: number): void {
-    if (this.stompClient.connected) {
-      const message = {
-        action: 'GET_ONE',
-        elementID: elementId
-      };
-
-      this.stompClient.publish({
-        destination: '/app/element', // Ziel-Topic für GET_ONE
-        body: JSON.stringify(message),
-      });
-      console.log('GET_ONE request sent for ID:', elementId);
-    } else {
-      console.error('STOMP client not connected.');
-    }
+    const message = {
+      action: 'GET_ONE',
+      elementID: elementId,
+    };
+    this.sendMessageToElement(message);
   }
 }

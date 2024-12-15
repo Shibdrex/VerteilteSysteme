@@ -33,6 +33,7 @@ export class ViewAllListsComponent implements OnInit{
                     //if fav is false returns all
    
     let fav = this.route.snapshot.queryParamMap.get('fav');
+    console.log(fav)
 
     if( fav === null){//default value for fav if fav doesn't appear in URL
       fav = "false"
@@ -75,17 +76,14 @@ export class ViewAllListsComponent implements OnInit{
                     console.log("CRUD-Operation erkannt:", data.action);
             
                     // Sende eine GET-Anfrage über die WebSocket-Verbindung
-                    this.webSocket.sendlist({
+                    this.webSocket.sendMessageToList({
                       action: 'GET_ALL',
                       destination: topic,
                     });
                   }
                   if (data.action === "GET_ALL") {
-                    console.log("Daten empfangen:", data);  // Optional: Ausgabe der Daten zum Debuggen
                 
-                    // Angenommen, data enthält ein Array von Listen (z.B. data.lists)
-                    if (Array.isArray(data.lists)) {
-                        // Weise das Array den this.lists zu
+                    if (Array.isArray(data.lists)) {//makes sure responce is an array
                         this.lists = data.lists;
                 
                         console.log("Endliste:", this.lists);  // Zeige das gespeicherte Array
@@ -94,9 +92,8 @@ export class ViewAllListsComponent implements OnInit{
                     }
                 }
                 }),
-                filter((data) => data.action === 'GET_ALL_RESPONSE'), // Filtere nur GET_ALL-Antworten
+                filter((data) => data.action === 'GET_ALL_RESPONSE'), //filters only the right respose
                 map((data: any[]) => {
-                  // Transformiere die empfangenen Daten
                   if (!Array.isArray(data)) {
                     console.error("Empfangene Daten sind kein Array:", data);
                     return [];

@@ -44,7 +44,7 @@ export class CreateNewListComponent implements OnDestroy {
       list: this.message.list,
     };
 
-    this.webSocketService.sendlist(createMessage);
+    this.webSocketService.sendMessageToList(createMessage);
     console.log('Liste über WebSocket gesendet:', createMessage);
   }
 

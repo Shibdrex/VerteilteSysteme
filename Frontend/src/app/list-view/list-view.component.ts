@@ -13,6 +13,8 @@ export class ListViewComponent {
 
   @Input() item: any;
 
+  
+
 
   Add(){
 
