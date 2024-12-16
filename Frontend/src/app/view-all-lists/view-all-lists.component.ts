@@ -50,7 +50,8 @@ export class ViewAllListsComponent implements OnInit {
     // Retrieve the user ID from the session service
     const session = this.sessionService.getSession();
     if (session) {
-      this.userID = session.id;  // Get user ID from session
+      this.userID = session.userId;  // Get user ID from session
+      console.log(this.userID)
     } else {
       console.log('No active session.');
     }

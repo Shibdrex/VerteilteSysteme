@@ -19,10 +19,10 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     // Fetch email from session via SessionService
-    const session = this.sessionService.getSession();
+    const session = this.sessionService.getSession();  
+    console.log(session)
     if (session) {
       this.userEmail = session.email;  // Retrieve email from session
-      console.log('User email:', this.userEmail);
     } else {
       console.log('No active session.');
     }
@@ -33,10 +33,3 @@ export class NavbarComponent implements OnInit {
     });
   }
 }
-
-
-
-  
-
-
-

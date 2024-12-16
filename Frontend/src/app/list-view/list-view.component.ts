@@ -72,6 +72,7 @@ export class ListViewComponent implements OnInit, OnChanges {
   }
 
   private requestItem(listId: number): void {
+    console.log(this.userID)
     const request = {
       action: 'GET_ONE',
       listID: listId,

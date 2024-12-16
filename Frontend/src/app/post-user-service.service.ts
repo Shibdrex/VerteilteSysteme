@@ -16,14 +16,14 @@ export class PostUserServiceService {
   ) {}
 
   getData(): Observable<any> {
-    // Retrieve session data (e.g., userID)
+    // Retrieve session data 
     const sessionData = this.sessionService.getSession();
-    const userID = sessionData ? sessionData.userID : null;
+    const userID = sessionData ? sessionData.userId : null;
 
     if (userID) {
       // Optional: Send userID in request headers or as part of the body
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${userID}`,  // Use token or userID in header (optional)
+        'Authorization': `Bearer ${userID}`,  
       });
 
       // Send GET request with session data (userID) as header

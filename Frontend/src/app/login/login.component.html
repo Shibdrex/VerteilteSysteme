@@ -13,7 +13,7 @@
               <label for="password">Password</label>
               <input type="password" class="form-control" id="password" [(ngModel)]="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <button (click)=" onSubmit()" type="submit" class="btn btn-primary w-100">Login</button>
             <div class="text-center mt-3">
               <button (click)="registrieren('1')" class="btn btn-link text-decoration-none" type="button">
                 Registrieren

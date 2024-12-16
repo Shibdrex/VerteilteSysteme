@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { WebSocketService } from '../httppost.service';
-import { SessionService } from '../session.service';  // Import the session service
+import { SessionService } from '../session.service';  
 
 @Component({
   selector: 'app-create-new-list',
@@ -9,44 +9,44 @@ import { SessionService } from '../session.service';  // Import the session serv
 })
 export class CreateNewListComponent implements OnDestroy {
 
-  private defaultInput = `{ 
+  private defaultInput = { 
     "userID": 1,
     "action": "CREATE",
     "list": {
       "title": "Neue Liste",
       "favorite": false
     }
-  }`;
+  };
 
-  private message = JSON.parse(this.defaultInput);
+  private message = { ...this.defaultInput };  // object copy
 
   constructor(
     private webSocketService: WebSocketService,
-    private sessionService: SessionService // Inject SessionService to access session data
+    private sessionService: SessionService // Injection to get Session data
   ) {
-    // Listen for incoming messages from the WebSocket
+    // Wget websocket message
     this.webSocketService.getReceivedMessages().subscribe({
       next: (message) => {
-        console.log('Message retrieved:', message);
+        console.log('Nachricht empfangen:', message);
         this.handleIncomingMessage(message);
       },
       error: (err) => {
-        console.error('Error while receiving message', err);
+        console.error('Fehler beim Empfang der Nachricht', err);
       },
       complete: () => {
-        console.log('WebSocket-Stream done');
+        console.log('WebSocket-Stream beendet');
       }
     });
   }
 
   // Get the userID from session and send the list
   sendListToWebsocket(): void {
-    const sessionData = this.sessionService.getSession();  // Retrieve session data
-    if (sessionData && sessionData.userID) {
-      this.message.userID = sessionData.userID;  // Set userID from session
+    const sessionData = this.sessionService.getSession();  
+    if (sessionData && sessionData.userId) {
+      this.message.userID = sessionData.userId;  
 
       const createMessage = {
-        userID: this.message.userID,
+        userID: this.message.userID, 
         action: 'CREATE',
         list: this.message.list,
       };
@@ -59,7 +59,7 @@ export class CreateNewListComponent implements OnDestroy {
   }
 
   private handleIncomingMessage(message: any): void {
-    console.log('retrieved message from WebSocket Service:', message);
+    console.log('Nachricht vom WebSocket Service:', message);
     
     if (message.action === 'CREATE_RESPONSE') {
       console.log('Erstellte Liste:', message);
@@ -67,6 +67,6 @@ export class CreateNewListComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('CreateNewListComponent destroyed.');
+    console.log('CreateNewListComponent wurde zerstört.');
   }
 }

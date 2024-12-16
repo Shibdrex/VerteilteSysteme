@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Client } from '@stomp/stompjs';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,13 +11,19 @@ export class WebSocketService {
   private messageReceiver: Subject<any>; // Receiver for incoming messages
   private elementReceiver: Subject<any>; // Receiver for specific element messages
 
-  constructor() {
+  
+  constructor( private sessionService: SessionService) {
+
+    const session = this.sessionService.getSession();
+    const jwt = session.jwt
+
     
     this.stompClient = new Client({
-      brokerURL: 'ws://localhost:5000/server',
+      brokerURL: `ws://localhost:5000/server?Token=${jwt}`,
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
+      connectHeaders: {Authorization: `Bearer ${jwt}` }
     });
 
     this.messageReceiver = new Subject<any>();
@@ -24,11 +31,6 @@ export class WebSocketService {
 
     this.stompClient.onConnect = () => {
       console.log('Connected to broker');
-
-
-
-
-
 
       // Subscribe to message topics
 
@@ -42,6 +44,10 @@ export class WebSocketService {
         if (parsed) this.elementReceiver.next(parsed);
       });
     };
+
+    this.stompClient.configure({
+      connectHeaders: {Authorization: `Bearer ${jwt}` }
+    })
 
     this.stompClient.activate();
   }
@@ -73,7 +79,6 @@ export class WebSocketService {
         destination: topic,
         body: JSON.stringify(message),
       });
-      console.log(`Message sent to ${topic}:`, message);
     } else {
       console.error('STOMP client not connected.');
     }
