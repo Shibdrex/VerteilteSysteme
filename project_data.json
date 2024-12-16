@@ -1,0 +1,6 @@
+{
+	"thema": "TODO-Liste",
+	"kurs": "INF22F",
+	"teilnehmer": "David Bauer (9414366),Ralf Kunath (5604381)",
+	"kurzbeschreibung": "In dem Projekt sollte eine TODO-Listen Anwendung mit Fokus auf Verteilte Systeme erstellt werden. In der Anwendung sollte es möglich sein das ein User mehrere Listen besitzt, und bestimmte Listen als Favoriten markieren kann. Anhand von den Favoriten und anderen Optionen sollte sortiert und gefiltert werden können. Die Anwendung sollte in Echtzeit reagieren und dem User sollte bei Server ausfällen nichts auffallen. Die Reaktionsgeschwindigkeit und Skalierbarkeit ist in der Anwendung hervorzuheben."
+}
