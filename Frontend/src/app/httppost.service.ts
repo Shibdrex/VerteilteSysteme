@@ -25,7 +25,13 @@ export class WebSocketService {
     this.stompClient.onConnect = () => {
       console.log('Connected to broker');
 
+
+
+
+
+
       // Subscribe to message topics
+
       this.stompClient.subscribe('/topic/list-answer', (message) => {
         const parsed = this.parseMessage(message);
         if (parsed) this.messageReceiver.next(parsed);
@@ -79,6 +85,7 @@ export class WebSocketService {
   }
 
   sendMessageToElement(message: any): void {
+
     this.sendMessageToTopic('/app/element', message);
   }
 

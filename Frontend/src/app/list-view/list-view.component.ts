@@ -112,16 +112,16 @@ getElement(){
                     console.log("Empfangene Elemente :", data);
                     console.log("acrion.data: ", data.action)
                    
-                    if (data.action === 'CREATE' || data.action === 'UPDATE' || data.action === 'DELETE') {
+                    if (data.action) {
               
                       console.log(this.idParam)
                       this.webSocketService.sendMessageToElement({
-                        action: 'GET_ALL_BY_LIST',
+                        action: 'GET_ALL',
                         destination: topic,
                         listID: this.idParam
                       });
                     }
-                    if (data.action === "GET_ALL_BY_LIST") {
+                    if (data.action === "GET_ALL") {
                   
                       if (Array.isArray(data.lists)) {//makes sure responce is an array
                           this.todos = data.lists;
@@ -165,7 +165,8 @@ getElement(){
         element:  {
           "name": "beispiel",
           "status": true,
-          "tags": "MEDIUM"
+          "tags": "standart",
+          "dueDate": "2024-10-11"
           }
     }
       
