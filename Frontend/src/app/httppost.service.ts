@@ -1,100 +1,104 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Client } from '@stomp/stompjs';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { SessionService } from './session.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WebSocketService {
-  private subject: WebSocketSubject<any>;
   private stompClient: Client;
-  private messagePublisher: Subject<any>;
-  private messageReceiver: Subject<any>;  // Subject to handle incoming messages
+  private messageReceiver: Subject<any>; // Receiver for incoming messages
+  private elementReceiver: Subject<any>; // Receiver for specific element messages
 
-  constructor() {
-    this.subject = webSocket('ws://localhost:5000/server');
+  
+  constructor( private sessionService: SessionService) {
 
+    const session = this.sessionService.getSession();
+    const jwt = session.jwt
+
+    
     this.stompClient = new Client({
-      brokerURL: 'ws://localhost:5000/server', // Replace with your WebSocket broker URL
+      brokerURL: `ws://localhost:5000/server?Token=${jwt}`,
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
+      connectHeaders: {Authorization: `Bearer ${jwt}` }
     });
 
-    this.messagePublisher = new Subject();
-    this.messageReceiver = new Subject();  // Initialize receiver Subject
+    this.messageReceiver = new Subject<any>();
+    this.elementReceiver = new Subject<any>();
 
-    this.stompClient.onConnect = (frame) => {
-      console.log('Connected to broker:'); //frame can be shown for debugging
+    this.stompClient.onConnect = () => {
+      console.log('Connected to broker');
 
-      // Subscribe to messagePublisher to send messages
-      this.messagePublisher.subscribe({
-        next: (message) => {
-          if (this.stompClient.connected) {
-            this.stompClient.publish({
-              destination: '/app/list', // Replace with your STOMP destination
-              body: JSON.stringify(message),
-            });
-            console.log('Message sent:', message);
-          } else {
-            console.error('STOMP client not connected.');
-          }
-        }
-      });
+      // Subscribe to message topics
 
-      // Subscribe to a STOMP topic for receiving messages
       this.stompClient.subscribe('/topic/list-answer', (message) => {
-        try {
-          console.log('Raw message received:', message);
+        const parsed = this.parseMessage(message);
+        if (parsed) this.messageReceiver.next(parsed);
+      });
 
-          // Parse the message body
-          const parsedBody = JSON.parse(message.body);
-          console.log('Parsed body:', parsedBody);
-
-          // Push the parsed body to messageReceiver
-          this.messageReceiver.next(parsedBody);
-        } catch (error) {
-          console.error('Error parsing message body:', error);
-        }
+      this.stompClient.subscribe("/topic/element-answer", (message) => {
+        const parsed = this.parseMessage(message);
+        if (parsed) this.elementReceiver.next(parsed);
       });
     };
 
-    this.stompClient.onWebSocketClose = () => {
-      console.log('WebSocket connection closed.');
-    };
-
-    this.stompClient.onWebSocketError = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    this.stompClient.onStompError = (frame) => {
-      console.error('STOMP error:', frame.headers['message']);
-      console.error('Details:', frame.body);
-    };
+    this.stompClient.configure({
+      connectHeaders: {Authorization: `Bearer ${jwt}` }
+    })
 
     this.stompClient.activate();
   }
 
-  // Method to send messages
-  sendMessage(message: any) {
-    this.messagePublisher.next(message);  // Publish message to the Subject
-  }
-
-  sendlist(message: any): void {
-    if (this.stompClient.connected) {
-      this.stompClient.publish({
-        destination: '/app/list', // Ziel-Topic
-        body: JSON.stringify(message),
-      });
-      console.log('Nachricht gesendet:', message);
-    } else {
-      console.error('STOMP-Client ist nicht verbunden.');
+  // General utility to parse STOMP messages
+  private parseMessage(message: any): any | null {
+    try {
+      return JSON.parse(message.body);
+    } catch (error) {
+      console.error('Error parsing message:', error);
+      return null;
     }
   }
 
-  // Method to receive messages
+  // Observable for general messages
   getReceivedMessages() {
-    return this.messageReceiver.asObservable();  // Return the Observable for receiving parsed message bodies
+    return this.messageReceiver.asObservable();
+  }
+
+  // Observable for element-specific messages
+  getElementMessages() {
+    return this.elementReceiver.asObservable();
+  }
+
+  // Generalized message-sending method
+  sendMessageToTopic(topic: string, message: any): void {
+    if (this.stompClient.connected) {
+      this.stompClient.publish({
+        destination: topic,
+        body: JSON.stringify(message),
+      });
+    } else {
+      console.error('STOMP client not connected.');
+    }
+  }
+
+  // Specific methods for sending to predefined topics
+  sendMessageToList(message: any): void {
+    this.sendMessageToTopic('/app/list', message);
+  }
+
+  sendMessageToElement(message: any): void {
+
+    this.sendMessageToTopic('/app/element', message);
+  }
+
+  sendGetOneRequest(elementId: number): void {
+    const message = {
+      action: 'GET_ONE',
+      elementID: elementId,
+    };
+    this.sendMessageToElement(message);
   }
 }

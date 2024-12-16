@@ -13,18 +13,20 @@
       crossorigin="anonymous">
 </head>
 <body class="bg-light">
-    <!-- Main container with a navbar on the left -->
-    <div class="container-fluid">
-        <!-- Sidebar/Navbar -->
-            <app-navbar></app-navbar>
+    <ng-container *ngIf="session === true; else NoUser">
+      <div class="container-fluid">
+          <!-- Sidebar/Navbar -->
+          <app-navbar></app-navbar>
 
-        <!-- Main Content -->
-        
-              <!--Shows all lists already with filter-->
-              <app-view-all-lists></app-view-all-lists>
-               
-           
-    </div>
+          <!-- Main Content -->
+          <app-view-all-lists></app-view-all-lists>
+      </div>
+    </ng-container>
+
+    <ng-template #NoUser>
+          <app-login></app-login>
+      
+    </ng-template>
 
     <!-- Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

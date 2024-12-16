@@ -1,6 +1,6 @@
-
 import { Component, OnDestroy } from '@angular/core';
 import { WebSocketService } from '../httppost.service';
+import { SessionService } from '../session.service';  
 
 @Component({
   selector: 'app-create-new-list',
@@ -8,36 +8,65 @@ import { WebSocketService } from '../httppost.service';
   styleUrls: ['./create-new-list.component.scss']
 })
 export class CreateNewListComponent implements OnDestroy {
-  private input = `{ 
+
+  private defaultInput = { 
     "userID": 1,
     "action": "CREATE",
     "list": {
       "title": "Neue Liste",
       "favorite": false
     }
-  }`;
-  private message = JSON.parse(this.input);
+  };
 
-  constructor(private webSocketService: WebSocketService) {
-    // Listen for incoming messages
+  private message = { ...this.defaultInput };  // object copy
+
+  constructor(
+    private webSocketService: WebSocketService,
+    private sessionService: SessionService // Injection to get Session data
+  ) {
+    // Wget websocket message
     this.webSocketService.getReceivedMessages().subscribe({
-      next: (message) => this.handleIncomingMessage(message),
-      error: (err) => console.error('Error receiving WebSocket message:', err),
+      next: (message) => {
+        console.log('Nachricht empfangen:', message);
+        this.handleIncomingMessage(message);
+      },
+      error: (err) => {
+        console.error('Fehler beim Empfang der Nachricht', err);
+      },
+      complete: () => {
+        console.log('WebSocket-Stream beendet');
+      }
     });
   }
 
-  sendListToKafka(): void {
-    this.webSocketService.sendMessage(this.message);
-    console.log('List sent via WebSocket:');
+  // Get the userID from session and send the list
+  sendListToWebsocket(): void {
+    const sessionData = this.sessionService.getSession();  
+    if (sessionData && sessionData.userId) {
+      this.message.userID = sessionData.userId;  
+
+      const createMessage = {
+        userID: this.message.userID, 
+        action: 'CREATE',
+        list: this.message.list,
+      };
+
+      this.webSocketService.sendMessageToList(createMessage);
+      console.log('Liste über WebSocket gesendet:', createMessage);
+    } else {
+      console.error('Kein Benutzer in der Sitzung gefunden!');
+    }
   }
 
-  handleIncomingMessage(message: any): void {
-    console.log('Message received from WebSocket:', message);
-    // Optionally, add custom logic to handle the message here
+  private handleIncomingMessage(message: any): void {
+    console.log('Nachricht vom WebSocket Service:', message);
+    
+    if (message.action === 'CREATE_RESPONSE') {
+      console.log('Erstellte Liste:', message);
+    }
   }
 
   ngOnDestroy(): void {
-    // No explicit connection closing required, STOMP handles reconnections
-    console.log('CreateNewListComponent destroyed.');
+    console.log('CreateNewListComponent wurde zerstört.');
   }
 }

@@ -1,28 +1,13 @@
-import { Component, Input } from '@angular/core';
-import { WebSocketService } from '../httppost.service'; 
+import { Component, Input} from '@angular/core';
+
 
 @Component({
- selector: 'app-list',
- templateUrl: './list.component.html',
- styleUrl: './list.component.scss'
+  selector: 'app-list',
+  templateUrl: './list.component.html',
+  styleUrls: ['./list.component.scss']
 })
-export class ListComponent {
-
-  lisde: any;
-
-  private lists : any; //Variable for Lists
-
-  private topic  = '/app/create-list'; //topic for connection with WebSocket
-
-  @Input() title = "title";
-
-constructor(private webSocket: WebSocketService) {}
-
-// getLists(){//gets all lists from the DB by calling the post-user-service.service
-//     this.lists = this.webSocket.subscribeToTopic(this.topic)
-//     console.log(this.lists)//controll/debug log
-//     return this.lists
-//   }
-
-
+export class ListComponent  {
+  @Input() title?: string;
+  @Input() id?: number;      
+  
 }
