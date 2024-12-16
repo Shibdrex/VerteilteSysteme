@@ -11,6 +11,7 @@ import dh.distributed.systems.Server.model.AuthenticationRequest;
 import dh.distributed.systems.Server.model.AuthenticationResponse;
 import lombok.AllArgsConstructor;
 
+@CrossOrigin
 @RestController
 @AllArgsConstructor
 public class AuthenticationController {
