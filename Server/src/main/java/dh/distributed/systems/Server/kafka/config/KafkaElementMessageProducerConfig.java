@@ -1,5 +1,7 @@
 package dh.distributed.systems.Server.kafka.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,18 +33,23 @@ public class KafkaElementMessageProducerConfig {
 
     @Bean
     @Primary
-    public ProducerFactory<String, ElementMessage> elementProducerFactory() {
+    public ProducerFactory<String, ElementMessage> elementProducerFactory() throws UnknownHostException {
         Map<String, Object> configProps = new HashMap<>();
+        String hostname = InetAddress.getLocalHost().getHostName();
+        String transactionalId = transactionIdPrefix + "-" + hostname + "-element";
+
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
-        configProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionIdPrefix + "-element");
+        configProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionalId);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, elementMessageSerializer.getClass());
         return new DefaultKafkaProducerFactory<>(configProps, new StringSerializer(), elementMessageSerializer);
     }
     @Bean
-    public KafkaTemplate<String, ElementMessage> kafkaElementTemplate() {
+    public KafkaTemplate<String, ElementMessage> kafkaElementTemplate() throws UnknownHostException {
         KafkaTemplate<String, ElementMessage> template = new KafkaTemplate<>(elementProducerFactory());
-        template.setTransactionIdPrefix(transactionIdPrefix);
+        String hostname = InetAddress.getLocalHost().getHostName();
+        String transactionalIdPrefixWithHostname = transactionIdPrefix + "-" + hostname;
+        template.setTransactionIdPrefix(transactionalIdPrefixWithHostname);
         return template;
     }
 }

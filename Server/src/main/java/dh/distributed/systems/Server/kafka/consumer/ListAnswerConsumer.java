@@ -25,5 +25,9 @@ public class ListAnswerConsumer {
     public void listen(ListAnswer answer) {
         log.info("Received ListAnswer from Kafka: {}", answer);
         messagingTemplate.convertAndSend("/topic/list-answer", answer);
+        messagingTemplate.convertAndSend("/topic/list-answer", answer);
+        messagingTemplate.convertAndSend("/topic/list-answer", answer);
+        messagingTemplate.convertAndSend("/topic/list-answer", answer);
+        messagingTemplate.convertAndSend("/topic/list-answer", answer);
     }
 }

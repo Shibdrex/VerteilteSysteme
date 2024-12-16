@@ -17,7 +17,7 @@ import dh.distributed.systems.Server.message.ListAnswer;
 
 @Configuration
 public class KafkaListAnswerConsumerConfig {
-    
+
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServer;
 
@@ -43,6 +43,8 @@ public class KafkaListAnswerConsumerConfig {
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ListAnswerDeSerializer.class);
         configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
         configProps.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, isolationLevel);
+        configProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000);
+        configProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000);
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
@@ -50,6 +52,7 @@ public class KafkaListAnswerConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, ListAnswer> kafkaListAnswerListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, ListAnswer> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(listAnswerConsumerFactory());
+        factory.setConcurrency(3);
         return factory;
     }
 }
