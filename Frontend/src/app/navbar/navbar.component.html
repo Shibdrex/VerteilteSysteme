@@ -1,16 +1,22 @@
 <nav class="sidebar">
-        <div>
-        
-            <a class="nav-link" href="#">
-                <img src="img.jpg" class="rounded-circle" alt="img">
-                Account
-            </a>    
+    <div>
+    
+        <a class="nav-link" href="#">
+            <img src="" class="rounded-circle" >
+            {{userEmail}}
+        </a>    
+    </div>
+
+    <a [routerLink]="['/list']" [queryParams]="{ fav: false }" queryParamsHandling="merge" class="favLink">
+        <div class="favLists">
+                Alle Listen
         </div>
+    </a>
 
-
-        <a href="#" class="favLink">
-                <div class="favAnzeige">
-                        FavListe
-                </div>
-        </a>
+    <a [routerLink]="['/list']" [queryParams]="{ fav: true }" queryParamsHandling="merge" class="favLink">
+            <div class="favLists">
+                    FavListe
+            </div>
+    </a>
 </nav>
+
