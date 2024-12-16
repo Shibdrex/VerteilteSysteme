@@ -84,6 +84,7 @@ services:
     environment:
       - SPRING_REDIS_HOST=sessionRedis
       - SPRING_REDIS_PORT=7000
+      - USER_SERVICE_URL=http://user-service:8080/api/list-users
     env_file:
       - .env
     hostname: "{{.Service.Name}-{.Task.Slot}}"

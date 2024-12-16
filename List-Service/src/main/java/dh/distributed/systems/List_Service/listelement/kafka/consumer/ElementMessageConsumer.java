@@ -103,6 +103,7 @@ public class ElementMessageConsumer {
             }
         } catch (Exception ex) {
             log.info("Something went wrong: " + ex);
+            producer.sendMessage("todo-element-answer", new ElementAnswer(null, "Some Error occurred", null, null, false));
         }
         this.tracker.markProcessed(message); // adds the just processed message to the tracking table
     }

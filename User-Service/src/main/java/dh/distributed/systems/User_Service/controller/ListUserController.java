@@ -49,8 +49,18 @@ public class ListUserController {
     }
 
     @GetMapping("/email")
-    public List<ListUserResponse> findByEmail(@RequestParam(required = false, name = "email") String email) {
-        return this.transformer.findListUserByEmail(email);
+    public ResponseEntity<ListUser> findByEmail(@RequestParam(required = false, name = "email") String email) {
+        ListUserResponse response = this.transformer.findListUserByEmail(email).stream().findFirst().orElse(null);
+        if (response == null) {
+            return ResponseEntity.notFound().build();
+        }
+        ListUser user = new ListUser();
+        user.setId(response.getId());
+        user.setFirstname(response.getFirstname());
+        user.setLastname(response.getLastname());
+        user.setEmail(response.getEmail());
+        user.setPassword(response.getPassword());
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/{id}")

@@ -3,6 +3,7 @@ package dh.distributed.systems.User_Service.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import lombok.AllArgsConstructor;
 public class ListUserManager {
 
     private final ListUserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Method to check if certain fields are filled.
@@ -129,6 +131,7 @@ public class ListUserManager {
         if (!isValid(user)) {
             throw new IllegalArgumentException("Invalid user data.");
         }
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         return this.repository.save(user);
     }
 
@@ -150,11 +153,18 @@ public class ListUserManager {
                 .map(user -> {
                     user.setFirstname(newUser.getFirstname());
                     user.setLastname(newUser.getLastname());
-                    user.setPassword(newUser.getPassword());
+                    if (newUser.getPassword() != null && !newUser.getPassword().isEmpty()) {
+                        user.setPassword(this.passwordEncoder.encode(newUser.getPassword()));
+                    } else {
+                        user.setPassword(user.getPassword());
+                    }
                     user.setEmail(newUser.getEmail());
                     return repository.save(user);
                 })
-                .orElseGet(() -> this.repository.save(newUser));
+                .orElseGet(() -> {
+                    newUser.setPassword(this.passwordEncoder.encode(newUser.getPassword()));
+                    return this.repository.save(newUser);
+                });
     }
 
     /**
