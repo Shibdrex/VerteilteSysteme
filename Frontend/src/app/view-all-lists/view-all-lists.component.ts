@@ -67,8 +67,7 @@ export class ViewAllListsComponent implements OnInit{
 
 
             getLists(): Observable<any[]> {
-              const topic = '/topic/list-answer'; // Topic für die CRUD-Antwort
-              console.log("Test")
+              const topic = '/topic/list-answer'; // Topic für die CRUD-Antwor
               // Empfange Nachrichten von der WebSocket-Verbindung
               return this.webSocket.getReceivedMessages().pipe(
                 tap((data) => {
@@ -80,6 +79,7 @@ export class ViewAllListsComponent implements OnInit{
             
                     // Sende eine GET-Anfrage über die WebSocket-Verbindung
                     this.webSocket.sendMessageToList({
+                      userID: 1,
                       action: 'GET_ALL',
                       destination: topic,
                     });

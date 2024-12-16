@@ -1,10 +1,9 @@
 {
-    "/server": {
-      "target": "http://localhost:5000",
-      "ws": true,
-      "changeOrigin": true,
-      "secure": false,
-      "logLevel": "debug"
-    }
+  
+  "/user/api/*": {
+    "target": "http://localhost:5000",
+    "secure": false
   }
   
+}
+

@@ -12,6 +12,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { NewListComponent } from './new-list/new-list.component';
 import { ViewAllListsComponent } from './view-all-lists/view-all-lists.component';
 import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { LoginComponent } from './login/login.component';
     NavbarComponent,
     NewListComponent,
     ViewAllListsComponent,
-    LoginComponent
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

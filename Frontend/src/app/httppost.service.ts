@@ -79,7 +79,6 @@ export class WebSocketService {
   }
 
   sendMessageToElement(message: any): void {
-    console.log("Message is send from /app/element ");
     this.sendMessageToTopic('/app/element', message);
   }
 

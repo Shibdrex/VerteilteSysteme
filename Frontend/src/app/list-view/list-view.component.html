@@ -53,7 +53,18 @@
         </ng-template>
     </div>
 </ng-template>
-    <button (click)="Add()" type="button" class="btn-secondary">Add</button>
+
+
+<input
+type="text"
+[(ngModel)]="todoElement"
+class="form-control"
+(keyup.enter)="Add()"
+style="display: inline-block; width: auto;"
+/>
+<button (click)="Add()" type="button" class="btn btn-link" style="padding: 0; text-decoration: none;" >
+  safe
+</button>
 
 
     <button (click)=Remove() type="button" class="btn btn-danger">Entfernen</button>

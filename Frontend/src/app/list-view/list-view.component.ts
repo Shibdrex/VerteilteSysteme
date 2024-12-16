@@ -1,6 +1,6 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { filter, map, Subscription, tap } from 'rxjs';
 import { WebSocketService } from '../httppost.service';
 
 
@@ -12,13 +12,14 @@ import { WebSocketService } from '../httppost.service';
 })
 
 
-export class ListViewComponent {
+export class ListViewComponent implements OnInit, OnChanges{
   
   urlId?: number;             // ID aus der URL
   item: any = null;           // Speichert das empfangene Item
   todos: any = null;
   idParam: any;               //Params from URL
-  access: boolean = false;                //access to edeting mode for title
+  access: boolean = false;    //access to edeting mode for title
+  todoElement: any;           //safes new added element in Add()
   private routeSubscription!: Subscription;
   private messageSubscription!: Subscription;
 
@@ -26,6 +27,7 @@ export class ListViewComponent {
     private route: ActivatedRoute,
     private webSocketService: WebSocketService
   ) {}
+  
 
   ngOnInit(): void {
     // subscribe to url to get current list id
@@ -33,7 +35,8 @@ export class ListViewComponent {
       this.idParam = params.get('id');
       if (this.idParam) {
         this.urlId = +this.idParam;
-        this.requestItem(this.urlId); 
+        this.requestItem(this.urlId);
+        this.requestElements(this.urlId);
       }
     });
 
@@ -57,7 +60,8 @@ export class ListViewComponent {
     if (changes['id'] && changes['id'].currentValue) {
       const newId = changes['id'].currentValue;
       console.log('Eingabe-ID geändert:', newId);
-      this.requestItem(newId); // Anfrage senden
+      this.requestItem(newId); // Send request for list
+      this.getElement() //send request for todo-elements
     }
   }
 
@@ -67,9 +71,18 @@ export class ListViewComponent {
       listID: listId,
       userID: 1
     };
-    this.webSocketService.sendMessageToList(request); // Anfrage an "/app/list" senden
-    console.log('GET_ONE-Anfrage an /app/list gesendet:', request);
+    this.webSocketService.sendMessageToList(request); 
   }
+
+  private requestElements(listId: number): void{
+    const request = {
+      action: 'GET_ALL',
+      listID: listId,
+      userID: 1
+    };
+    this.webSocketService.sendMessageToElement(request);
+  }
+
 
   ngOnDestroy(): void {
     // Unsubscribe von allen Subscriptions
@@ -83,42 +96,80 @@ export class ListViewComponent {
         this.item = message.list
         if(message.lists === null){}
         else{
-
+            console.log("Hi ich bin hier!!!!!!!!!!")
           this.todos = message.lists
         }
-        console.log("final Item: ", this.item)
+        console.log("final Item: ", this.todos)
     }
   }
 
+
+getElement(){
+   const topic = '/topic/element-answer'; // Topic für die CRUD-Antwort
+                // Empfange Nachrichten von der WebSocket-Verbindung
+                return this.webSocketService.getElementMessages().pipe(
+                  tap((data) => {
+                    console.log("Empfangene Elemente :", data);
+                    console.log("acrion.data: ", data.action)
+                   
+                    if (data.action === 'CREATE' || data.action === 'UPDATE' || data.action === 'DELETE') {
+              
+                      console.log(this.idParam)
+                      this.webSocketService.sendMessageToElement({
+                        action: 'GET_ALL_BY_LIST',
+                        destination: topic,
+                        listID: this.idParam
+                      });
+                    }
+                    if (data.action === "GET_ALL_BY_LIST") {
+                  
+                      if (Array.isArray(data.lists)) {//makes sure responce is an array
+                          this.todos = data.lists;
+                  
+                          console.log("Endliste:", this.todos);  // Zeige das gespeicherte Array
+                      } else {
+                          console.error("Die empfangenen Daten sind kein Array:", data.lists);
+                      }
+                  }
+                  }),
+                  filter((data) => data.action === 'GET_ALL_RESPONSE'), //filters only the right respose
+                  map((data: any[]) => {
+                    if (!Array.isArray(data)) {
+                      console.error("Empfangene Daten sind kein Array:", data);
+                      return [];
+                    }
+              
+                    const transformedData = data.map((item) => ({
+                      id: item.element.id,
+                      name: item.element.name,
+                      status: item.element.status,
+                    }));
+              
+                    console.log("Transformierte Daten:", transformedData);
+                    return transformedData;
+                  })
+                );
+              
+              
+}
+
+
+
+
   Add(){
-    // const updateList = {
-    //   listID: this.item.userID,
-    //   action: 'UPDATE',
-    //   userID: 1
-    // };
 
-    // const addElement ={
-    //     userID: 1,
-    //     listID: this.item.userID,
-    //     action: 'CREATE',
-    //     element: {
-    //         name: "",
-    //         status: false,
-    //     }
-    // }
+    const addElement ={
+        userID: 1,
+        listID: this.idParam,
+        action: 'CREATE',
+        element:  {
+          "name": "beispiel",
+          "status": true,
+          "tags": "MEDIUM"
+          }
+    }
       
-    //     "element": {
-    //         "id": "Integer <Generated>",
-    //         "status": "Boolean",
-    //         "tags": "Set<String> [Must decide on tags]",
-    //         "dueDate": "Date",
-    //         "name": "Varchar",
-    //         "user": "ListUser <Set during creation with userID",
-    //         "list": "TodoList <Set during creation with listID"
-    //     }
-    
-
-    // this.webSocketService.sendMessageToList(updateList);
+    this.webSocketService.sendMessageToElement(addElement);
   }
   
   Remove(){//delets list from DB
@@ -154,6 +205,7 @@ export class ListViewComponent {
   }
 
   UpdateTitle(){
+    this.idParam = +this.idParam
 
     const newTitle = {
       userID: 1, 
