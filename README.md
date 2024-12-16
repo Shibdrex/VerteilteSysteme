@@ -18,6 +18,13 @@ docker compose up
 # oder
 podman compose up
 ```
+zu empfehlen ist
+```
+docker compose up --build --detach
+# oder
+podman compose up --build --detach
+```
+Damit wird sichergestellt das die Images neu gebaut werden und das Terminal dannach wieder frei ist, es laufen sehr viele Logs von kafka durch
 #### Der Befehl muss auf root Ebene des Projekts ausgeführt werden damit die Kontext Pfade zu den Dockerfiles korrekt sind
 
 Es sollten keine weiteren Schritte benötigt werden
