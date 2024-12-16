@@ -1,0 +1,60 @@
+%!TEX root = ./main.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Vorlage für Bachelor Arbeit und weitere Dokumentationen (T1000 - T3300)
+%%   von Maximilian Knopf
+%%   inspiriert von einer DHBW Heidenheim Vorlage, https://github.com/programonaut/latex-template
+%%
+%% Erstellen mitteles Kommandozeile:
+%%   pdflatex main.tex
+%%   biber main
+%%   pdflatex main.tex
+%%   pdflatex main.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{config/config}
+\input{config/header}
+
+%% Start des Dokuments
+\begin{document}
+\linespread{1.5}
+    %TODO: Liste aller TODOs, auskommentieren für die Abgabe!
+    %\listoftodos
+
+    %% Titelblatt
+    \input{resources/cover}
+
+    \pagestyle{scrheadings}
+    \pagenumbering{Roman}
+
+    %% Inhaltsverzeichnis
+    \begin{spacing}{1.2}
+        \begingroup
+            \setcounter{tocdepth}{2} % subchapter Anzeigetiefe
+            \tableofcontents
+        \endgroup
+    \end{spacing}
+
+    \clearpage
+    \pagenumbering{arabic}
+    
+    %% Abbildungsverzeichnis
+    \listoffigures
+    \clearpage
+    
+    %% Skriptverzeichnis
+    \lstlistoflistings
+    \clearpage
+    
+    \acresetall
+
+    %% Inhalt
+    \input{content/content}
+
+    %% Literaturverzeichnis
+    \printbibliography[title=Literaturverzeichnis]
+    \clearpage
+
+
+\end{document}
