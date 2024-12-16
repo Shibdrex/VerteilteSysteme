@@ -6,42 +6,42 @@ import { catchError, map, Observable, of, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class SessionService {
-  private apiUrl = 'http://localhost:5000/user/api/list-users'; // Endpoint, um Benutzerdaten zu holen
-  private sessionUrl = 'http://localhost:5000/server/authenticate'; // Authentifizierungs-Endpunkt
-  private sessionKey = 'userSession'; // Session key für das SessionStorage
+  private apiUrl = 'http://localhost:5000/user/api/list-users'; // Endpoint user Data
+  private sessionUrl = 'http://localhost:5000/server/authenticate'; // authentification endpoint
+  private sessionKey = 'userSession';
 
   constructor(private http: HttpClient) {}
 
-  // Holt die Session aus dem SessionStorage
+  // gets Session from storrage
   getSession(): any {
     const sessionData = sessionStorage.getItem(this.sessionKey);
     console.log(sessionData)
     return sessionData ? JSON.parse(sessionData) : null;
   }
 
-  // Setzt die Session im SessionStorage
+  // sets session in storrage essionStorage
   setSession(data: any): void {
 
     sessionStorage.setItem(this.sessionKey, JSON.stringify(data));
   }
 
-  // Löscht die Session im SessionStorage
+  // deletes Session
   clearSession(): void {
     sessionStorage.removeItem(this.sessionKey);
   }
 
-  // Überprüft, ob eine Session aktiv ist
+  // Is session active
   isSessionActive(): boolean {
     return !!sessionStorage.getItem(this.sessionKey);
   }
 
-  // Holt Benutzerdaten vom Server
+  //collects all pieces of session
   getData(): Observable<any> {
     const session = this.getSession();
     const token = session ? session.jwt : null; // get jwt Token
 
     if (!token) {
-      throw new Error('No JWT token found'); // Fehler werfen, wenn kein Token in der Session vorhanden ist
+      throw new Error('No JWT token found'); 
     }
 
     //set authorization header
@@ -63,7 +63,7 @@ export class SessionService {
       tap((response) => {
         if (response && response.jwt) {
          
-          // Holt die Benutzerdaten anhand der E-Mail-Adresse
+          // Gets user data 
           this.getUserByEmail(email).subscribe((userData) => {
             if (userData) {
   

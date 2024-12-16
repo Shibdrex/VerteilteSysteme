@@ -20,7 +20,7 @@ export class RegisterComponent {
   ) {}
 
   onSubmit(): void {
-    if (this.password !== this.confirmPassword) {
+    if (this.password !== this.confirmPassword) {//checks if both passwords are the same
       console.error('Passwords do not match');
       return;
     }
@@ -32,7 +32,7 @@ export class RegisterComponent {
       password: this.hashPassword(this.password)
     };
 
-    this.postUserService.postNewAccount(newUser).subscribe(
+    this.postUserService.postNewAccount(newUser).subscribe(//posts new user
       (response) => {
         console.log('User created successfully:', response);
         this.router.navigate(['/login']);
@@ -44,7 +44,6 @@ export class RegisterComponent {
   }
 
   hashPassword(password: string): string {
-    // This should be replaced with actual bcrypt hashing on the server-side.
-    return 'hashed_' + password;
+    return 'BCryped' + password;
   }
 }

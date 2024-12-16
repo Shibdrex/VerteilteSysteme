@@ -9,67 +9,66 @@ import { SessionService } from '../session.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  public session: boolean = false; // Gibt an, ob der Benutzer eingeloggt ist
-  public register: number = 0; // Steuert die Anzeige der Registrierungsnachricht
-  private subscriptions: Subscription = new Subscription(); // Für die Subscription Verwaltung
-  public email: string = ''; // Benutzer-Email
-  public password: string = ''; // Benutzer-Passwort
+  public session: boolean = false; 
+  public register: number = 0; 
+  private subscriptions: Subscription = new Subscription(); 
+  public email: string = ''; 
+  public password: string = ''; 
 
   constructor(
-    private route: ActivatedRoute, // Zum Abrufen von URL-Parametern
-    private router: Router, // Zum Navigieren
-    private sessionService: SessionService // Zugriff auf den SessionService
+    private route: ActivatedRoute, 
+    private router: Router,
+    private sessionService: SessionService 
   ) {}
 
   ngOnInit(): void {
-    // Überprüfen, ob bereits eine Session existiert (d.h. der Benutzer ist eingeloggt)
+    //checks if there is a session
     const sessionData = sessionStorage.getItem('userSession');
     if (sessionData) {
       const session = JSON.parse(sessionData);
-      this.session = !!session; // Setzt session auf true, wenn die Session existiert
+      this.session = !!session; // set session true if exists
     } else {
-      this.session = false; // Wenn keine Session vorhanden ist, wird false gesetzt
+      this.session = false; 
     }
 
-    // Überprüfen von URL-Query-Parametern (z.B. "registriert"), um den Status der Registrierung anzuzeigen
+    //checks if registriert = 1 and the register view should be shown
     const queryParamsSub = this.route.queryParamMap.subscribe((params) => {
       const registerParam = params.get('registriert');
-      this.registrieren(registerParam); // Registrierungsstatus setzen
+      this.registrieren(registerParam); 
     });
-    this.subscriptions.add(queryParamsSub); // Subscription für späteres Abmelden speichern
+    this.subscriptions.add(queryParamsSub); 
   }
 
-  // Überprüft, ob der Benutzer bereits registriert ist und setzt den Status
+  //if pram = 1 view goes to register
   registrieren(registerParam: string | null): void {
-    this.register = registerParam === '1' ? 1 : 0; // Wenn der Parameter "registriert" gleich 1 ist, wird die Registrierung angezeigt
+    this.register = registerParam === '1' ? 1 : 0; 
   }
 
-  // Wird aufgerufen, wenn das Login-Formular abgesendet wird
+  //start to make session with login
   onSubmit(): void {
-    // Versucht, den Benutzer mit der angegebenen E-Mail und Passwort einzuloggen
     this.sessionService.login(this.email, this.password).subscribe(
       (response) => {
         console.log(response.userID)
-        if (response.jwt) { // Überprüft, ob das JWT in der Antwort vorhanden ist
+        if (response.jwt) { //check if jwt exists
           const sessionData = {
             userID: response.id,
             email: this.email,
-            sessionKey: response.jwt, // JWT als sessionKey speichern
+            sessionKey: response.jwt, 
           };
     
 
-          this.session = true; // Setzt die session-Variable auf true
-          this.router.navigate(['/list'], { // Navigiert zur Liste von Benutzern
+          this.session = true; 
+          this.router.navigate(['/list'], { //change route to user
             queryParams: { session: 'true' },
           });
 
-          // Jetzt, da der Benutzer eingeloggt ist, kann die getData Anfrage ausgeführt werden
+          //get SessionData
           this.sessionService.getData().subscribe(
             (userData) => {
-              console.log('Benutzerdaten:', userData); // Benutzerdaten erfolgreich abgerufen
+              console.log('Benutzerdaten:', userData); 
             },
             (error) => {
-              console.error('Fehler beim Abrufen der Benutzerdaten:', error); // Fehler beim Abrufen der Benutzerdaten
+              console.error('Fehler beim Abrufen der Benutzerdaten:', error);
             }
           );
         } else {
@@ -89,8 +88,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
-  ngOnDestroy(): void {
-    // Abmelden der Subscription, um Speicherlecks zu vermeiden
+  ngOnDestroy(): void {//kills subscription
     this.subscriptions.unsubscribe();
   }
 }
