@@ -21,7 +21,6 @@ export class PostUserServiceService {
     const userID = sessionData ? sessionData.userId : null;
 
     if (userID) {
-      // Optional: Send userID in request headers or as part of the body
       const headers = new HttpHeaders({
         'Authorization': `Bearer ${userID}`,  
       });

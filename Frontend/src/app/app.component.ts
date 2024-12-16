@@ -9,7 +9,7 @@ import { SessionService } from './session.service';  // Import SessionService
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'Angular App'; // You may modify the title as needed
+  title = 'Angular App'; 
   session: boolean = false;  // Initialize session as false
   register: number = 0;
   private route = inject(ActivatedRoute);
@@ -22,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // Check if session is active when the component initializes
     this.session = this.sessionService.isSessionActive();  // Get the session status
 
-    // Beobachte Änderungen der URL-Parameter, speziell des 'session'-Parameters
+    //checks session
     const sessionSub = this.route.queryParamMap.subscribe(params => {
       const sessionParam = params.get('session');
       this.session = sessionParam === 'true';
@@ -35,13 +35,12 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Füge die Subscriptions hinzu, um sie später zu löschen
+    
     this.subscriptions.add(sessionSub);
     this.subscriptions.add(registerSub);
   }
 
-  ngOnDestroy(): void {
-    // Bereinige Subscriptions, um Memory-Leaks zu vermeiden
+  ngOnDestroy(): void {//kills subscription
     this.subscriptions.unsubscribe();
   }
 }

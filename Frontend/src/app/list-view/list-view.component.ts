@@ -1,8 +1,8 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map, Subscription, tap } from 'rxjs';
 import { WebSocketService } from '../httppost.service';
-import { SessionService } from '../session.service';  // Import SessionService
+import { SessionService } from '../session.service'; 
 
 @Component({
   selector: 'app-list-view',
@@ -11,12 +11,12 @@ import { SessionService } from '../session.service';  // Import SessionService
 })
 export class ListViewComponent implements OnInit, OnChanges {
 
-  urlId?: number;             // ID aus der URL
-  item: any = null;           // Speichert das empfangene Item
+  urlId?: number;            
+  item: any = null;          
   todos: any = null;
-  idParam: any;               //Params from URL
-  access: boolean = false;    //access to editing mode for title
-  todoElement: any;           //saves new added element in Add()
+  idParam: any;               
+  access: boolean = false;    
+  todoElement: any;           
   private routeSubscription!: Subscription;
   private messageSubscription!: Subscription;
 
