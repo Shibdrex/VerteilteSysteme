@@ -8,7 +8,8 @@ import { PostUserServiceService } from '../post-user-service.service';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
-  public name: string = '';
+  public firstname: string = '';
+  public lastname: string = '';
   public email: string = '';
   public password: string = '';
   public confirmPassword: string = '';
@@ -25,7 +26,8 @@ export class RegisterComponent {
     }
 
     const newUser = {
-      name: this.name,
+      firstname: this.firstname,
+      lastname: this.lastname,
       email: this.email,
       password: this.hashPassword(this.password)
     };

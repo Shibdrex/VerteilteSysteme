@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { PostUserServiceService } from '../post-user-service.service';
+import { SessionService } from '../session.service';
 
 @Component({
   selector: 'app-login',
@@ -18,14 +18,20 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private postUserService: PostUserServiceService
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
+    const sessionData = sessionStorage.getItem('userSession');
+    if (sessionData) {
+      const session = JSON.parse(sessionData);
+      this.session = !!session;
+    } else {
+      this.session = false;
+    }
+
     const queryParamsSub = this.route.queryParamMap.subscribe((params) => {
-      const sessionParam = params.get('session');
       const registerParam = params.get('registriert');
-      this.session = sessionParam === 'true';
       this.registrieren(registerParam);
     });
     this.subscriptions.add(queryParamsSub);
@@ -36,23 +42,33 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    this.postUserService.getData().subscribe(
-      (users) => {
-        const user = users.find((u: any) => u.email === this.email);
-        if (user && user.password === this.password) {
-          console.log('Login successful');
+    this.sessionService.login(this.email, this.password).subscribe(
+      (response) => {
+        if (response && response.token) {
+          const sessionData = {
+            email: this.email,
+            sessionKey: response.token, // JWT als sessionKey
+          };
+          this.sessionService.setSession(sessionData);
+
+          this.session = true;
           this.router.navigate(['/list'], {
-            queryParams: { session: 'true' }  // Set the session to true
+            queryParams: { session: 'true' },
           });
         } else {
-          console.error('Invalid email or password');
+          console.error('Login fehlgeschlagen: Ungültige Anmeldedaten');
         }
       },
       (error) => {
-        console.error('Error fetching users:', error);
+        console.error('Fehler bei der Authentifizierung:', error);
       }
     );
+  }
 
+  logout(): void {
+    this.sessionService.clearSession();
+    this.session = false;
+    this.router.navigate(['/login']);
   }
 
   ngOnDestroy(): void {
