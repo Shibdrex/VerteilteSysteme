@@ -1,0 +1,36 @@
+\section*{Angular}
+
+Angular ist eines der bekanntesten Web-Frameworks, neben React, welches reaktive Webprogrammierung nutzt \autocite{source1}. Diese Anwendung bietet sich dabei für die Nutzung von Angular bzw. ein reaktives Framework an, da sich in einer Todo-Liste oft Zustände ändern, was bei nicht reaktiven Frameworks dazu führen würde, dass die Seite neu geladen werden muss \autocite{source2}. 
+
+Um zu erreichen, dass immer nur einzelne Komponenten des Programms neu geladen werden müssen, arbeitet Angular mit sogenannten \textit{Components}. Jede Component besitzt dabei für sich eine eigene HTML-, CSS (SCSS)- und TypeScript-Datei, diese werden dabei in sogenannte Parent- und Child-Components unterschieden. Die Haupt-Component ist dabei die \texttt{App-Component}, von ihr werden alle anderen Components aufgerufen. 
+
+In dieser Anwendung werden dabei die Components so verwendet, dass jeder unabhängige Bereich eine eigene Component bekommt. Die Components sind dabei wie in einem Baumdiagramm aufgebaut, so besitzt die \texttt{App-Component} 3 Child-Components (Navbar, ViewAllLists, Login), welche dann wiederum neue Child-Components haben.
+
+% Hier kannst du das Bild einfügen
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{bild_link_einfügen.jpg} % Füge den Link für das Bild hier ein
+    \caption{Beispielhafte Struktur der Angular-Components}
+\end{figure}
+
+Neben den Components werden in Angular auch Services verwendet \cite{source3}, diese dienen als Bindeglied zwischen den Components und können für spezielle Zwecke, wie die Verbindung zum Server, genutzt werden, welche für mehrere Components relevant sind.
+
+\section*{Verbindung zum Server}
+
+In dieser Anwendung wird für den Transport der Listen und der Elemente zwischen Server und Frontend ein Websocket verwendet, da so Traffic gespart werden kann. Der Websocket verbindet dabei fast den gesamten Verlauf der Daten, vom Frontend bis zum List-Service. Auf ihn wird in einem Angular-Service mit Hilfe der RXJS-Bibliothek und dem STOMP-Protokoll zugegriffen. 
+
+\subsection*{RXJS}
+
+RXJS ist eine Angular-Bibliothek, welche sich vor allem mit asynchronen Datenströmen befasst. Sie bietet dabei viele Extensions wie Subscriptions, Observables, Schedulers usw. \cite{source4}. Mit ihr wird in dieser Anwendung vor allem die eingehenden Daten verarbeitet, so werden beispielsweise die Topics abonniert, auf die die Antworten des Servers gesendet werden.
+
+\subsection*{STOMP}
+
+STOMP ist ein WebSocket-Protokoll. Es besitzt einen einfachen Aufbau und ist in Klartext geschrieben. Das Protokoll eignet sich unter anderem gut für Echtzeitanwendungen. Da es sich hier um eine Echtzeitanwendung handelt und die Daten, die im Websocket gesendet werden, nicht kritisch sind, weshalb sie keine besondere Sicherheit benötigen, eignet sich dieses Protokoll hier gut. Auch gibt es viele Quellen zur Implementierung von STOMP in Spring Boot, was die Einbindung des WebSockets erleichtert \cite{source5}.
+
+\section*{Loadbalancer}
+
+Vor dem Server liegt noch ein Loadbalancer. Dabei handelt es sich um einen nginx Reverse Proxy, dieser verteilt die Daten an die einzelnen Serverinstanzen, ist aber im Datenfluss so nicht merkbar und wird auch bei der Datenübertragung nicht direkt beachtet \cite{source6}.
+
+\newpage
+
+\section*{Quellen}
